@@ -31,21 +31,6 @@ sirenSettings[1]["b"] = 0
 sirenSettings[1]["a"] = 200
 sirenSettings[1]["am"] = 200
 
-local function refreshPosition(sirenpoint, x, y, z)
-	sirenSettings[sirenpoint]["x"] = x
-	sirenSettings[sirenpoint]["y"] = y
-	sirenSettings[sirenpoint]["z"] = z
-end
-
-local function refreshColor(sirenpoint, r, g, b, a, am)
-	sirenSettings[sirenpoint]["r"] = r
-	sirenSettings[sirenpoint]["g"] = g
-	sirenSettings[sirenpoint]["b"] = b
-	sirenSettings[sirenpoint]["a"] = a
-	sirenSettings[sirenpoint]["am"] = am
-end
-
-
 local function preCreate()
 	outputDebugString("PreCreate sireneditor-guielements")
 	local sWidth, sHeight = guiGetScreenSize()
