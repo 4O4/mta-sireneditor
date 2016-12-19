@@ -1,6 +1,3 @@
-local Guivar = 0
-local gMe = getLocalPlayer()
-
 local Fenster = {}
 local TabPanel = {}
 local Tab = {}
@@ -166,7 +163,7 @@ local function preCreate()
 		guiScrollBarSetScrollPosition(Scrollbar[7], sirenSettings[s]["a"]/2.55)
 		guiScrollBarSetScrollPosition(Scrollbar[8], sirenSettings[s]["am"]/2.55)]]
 		
-		triggerServerEvent("onSireneditorSirenApply", gMe, setting["anzahlsirenen"], setting["sirenentype"], setting["360flag"], setting["checklosflag"], setting["randomizer"], setting["silent"], sirenSettings)
+		triggerServerEvent("onSireneditorSirenApply", localPlayer, setting["anzahlsirenen"], setting["sirenentype"], setting["360flag"], setting["checklosflag"], setting["randomizer"], setting["silent"], sirenSettings)
 	
 	end
 	-- EVENT HANDLERS --
@@ -247,7 +244,7 @@ local function preCreate()
 	-- CLICK EVENTS --
 	-- APPLY --
 	addEventHandler("onClientGUIClick", Knopf[3], function()
-		triggerServerEvent("onSireneditorSirenApply", gMe, setting["anzahlsirenen"], setting["sirenentype"], setting["360flag"], setting["checklosflag"], setting["randomizer"], setting["silent"], sirenSettings)
+		triggerServerEvent("onSireneditorSirenApply", localPlayer, setting["anzahlsirenen"], setting["sirenentype"], setting["360flag"], setting["checklosflag"], setting["randomizer"], setting["silent"], sirenSettings)
 	end, false)
 	-- VIEW CODE --
 	addEventHandler("onClientGUIClick", Knopf[4], function()
@@ -309,7 +306,7 @@ addCommandHandler("sireneditor", function()
 		guiSetVisible(Fenster[2], false)
 		showCursor(false)
 	else
-		if(isPedInVehicle(gMe) == false) then
+		if(isPedInVehicle(localPlayer) == false) then
 			outputChatBox("Du musst in einem Fahrzeug sein/You must sit in a vehicle!", 255, 0, 0)
 			return
 		end
