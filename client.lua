@@ -1,7 +1,7 @@
-local Fenster = {}
+local Window = {}
 local TabPanel = {}
 local Tab = {}
-local Knopf = {}
+local Button = {}
 local Checkbox = {}
 local Label = {}
 local Edit = {}
@@ -10,8 +10,8 @@ local Memo
 
 local setting = {}
 local sirenSettings = {}
-setting["anzahlsirenen"] = 1
-setting["sirenentype"] = 2
+setting["sirenCount"] = 1
+setting["sirenType"] = 2
 setting["360flag"] = false
 setting["checklosflag"] = true
 setting["randomizer"] = true
@@ -52,33 +52,33 @@ local function preCreate()
     local X = (sWidth/2) - (Width/2)
     local Y = (sHeight/2) - (Height/2)
 	
-	Fenster[1] = guiCreateWindow(X, 0, Width, Height,"Siren Editor by Noneatme",false)
+	Window[1] = guiCreateWindow(X, 0, Width, Height,"Siren Editor by Noneatme",false)
 	local sx, sy = guiGetScreenSize()
-	Fenster[2] = guiCreateWindow(1200/1920*sx,114/1080*sy,307,176,"Output",false)
-	Memo = guiCreateMemo(9,23,291,145,"",false,Fenster[2])
+	Window[2] = guiCreateWindow(1200/1920*sx,114/1080*sy,307,176,"Output",false)
+	Memo = guiCreateMemo(9,23,291,145,"",false,Window[2])
 	guiMemoSetReadOnly(Memo, true)
-	guiSetVisible(Fenster[2], false)
+	guiSetVisible(Window[2], false)
 	
 	
-	Label[1] = guiCreateLabel(14,22,109,16,"Global Settings:",false,Fenster[1])
+	Label[1] = guiCreateLabel(14,22,109,16,"Global Settings:",false,Window[1])
 	guiSetFont(Label[1],"default-bold-small")
-	Label[2] = guiCreateLabel(11,26,135,15,"___________________",false,Fenster[1])
+	Label[2] = guiCreateLabel(11,26,135,15,"___________________",false,Window[1])
 	guiLabelSetColor(Label[2],0, 255, 0)
 	guiSetFont(Label[2],"default-bold-small")
-	Label[3] = guiCreateLabel(12,49,138,15,"Number of Sirens:(1-10)",false,Fenster[1])
+	Label[3] = guiCreateLabel(12,49,138,15,"Number of Sirens:(1-10)",false,Window[1])
 	guiSetFont(Label[3],"default-bold-small")
-	Edit[1] = guiCreateEdit(156,45,35,24,setting["anzahlsirenen"],false,Fenster[1])
-	Label[4] = guiCreateLabel(11,79,138,15,"Siren type: (1-?)",false,Fenster[1])
+	Edit[1] = guiCreateEdit(156,45,35,24,setting["sirenCount"],false,Window[1])
+	Label[4] = guiCreateLabel(11,79,138,15,"Siren type: (1-?)",false,Window[1])
 	guiSetFont(Label[4],"default-bold-small")
-	Edit[2] = guiCreateEdit(156,75,35,24,setting["sirenentype"],false,Fenster[1])
-	Label[5] = guiCreateLabel(10,99,458,16,"______________________________________________________________________________",false,Fenster[1])
-	Checkbox[1] = guiCreateCheckBox(226,49,99,20,"360 Flag",false,false,Fenster[1])
+	Edit[2] = guiCreateEdit(156,75,35,24,setting["sirenType"],false,Window[1])
+	Label[5] = guiCreateLabel(10,99,458,16,"______________________________________________________________________________",false,Window[1])
+	Checkbox[1] = guiCreateCheckBox(226,49,99,20,"360 Flag",false,false,Window[1])
 	guiSetFont(Checkbox[1],"default-bold-small")
-	Checkbox[2] = guiCreateCheckBox(226,73,99,20,"checkLosFlag",false,false,Fenster[1])
+	Checkbox[2] = guiCreateCheckBox(226,73,99,20,"checkLosFlag",false,false,Window[1])
 	guiSetFont(Checkbox[2],"default-bold-small")
-	Checkbox[3] = guiCreateCheckBox(327,50,99,20,"Randomizer",false,false,Fenster[1])
+	Checkbox[3] = guiCreateCheckBox(327,50,99,20,"Randomizer",false,false,Window[1])
 	guiSetFont(Checkbox[3],"default-bold-small")
-	Checkbox[4] = guiCreateCheckBox(327,74,99,20,"SilentFlag",false,false,Fenster[1])
+	Checkbox[4] = guiCreateCheckBox(327,74,99,20,"SilentFlag",false,false,Window[1])
 	guiSetFont(Checkbox[4],"default-bold-small")
 	
 	-- CHECKBOX --
@@ -87,7 +87,7 @@ local function preCreate()
 	guiCheckBoxSetSelected(Checkbox[3],setting["randomizer"])
 	guiCheckBoxSetSelected(Checkbox[4],setting["silent"])
 	
-	TabPanel[1] = guiCreateTabPanel(9,148,456,129,false,Fenster[1])
+	TabPanel[1] = guiCreateTabPanel(9,148,456,129,false,Window[1])
 	Tab[1] = guiCreateTab("Position",TabPanel[1])	
 	Tab[2] = guiCreateTab("Color",TabPanel[1])
 	
@@ -121,14 +121,14 @@ local function preCreate()
 	Tab[3] = guiCreateTab("Credits",TabPanel[1])
 	Label[9] = guiCreateLabel(6,4,447,95,"This GUI-Siren Editor was made by Noneatme.\nDieser Sirenen-Editor wurde von Noneatme erstellt.\n\nThanks to the MTA developer for the awesome siren-functions!\n\nIf you have any question, you can PM me via www.forum.mta-sa.de",false,Tab[3])
 	guiSetFont(Label[9],"default-bold-small")
-	Label[10] = guiCreateLabel(11,118,102,12,"Using siren Point: ",false,Fenster[1])
+	Label[10] = guiCreateLabel(11,118,102,12,"Using siren Point: ",false,Window[1])
 	guiSetFont(Label[10],"default-bold-small")
-	Knopf[1] = guiCreateButton(118,117,65,22,"<--",false,Fenster[1])
-	Label[11] = guiCreateLabel(191,120,34,21,setting["usingsiren"],false,Fenster[1])
+	Button[1] = guiCreateButton(118,117,65,22,"<--",false,Window[1])
+	Label[11] = guiCreateLabel(191,120,34,21,setting["usingsiren"],false,Window[1])
 	guiSetFont(Label[11],"default-bold-small")
-	Knopf[2] = guiCreateButton(212,116,65,22,"-->",false,Fenster[1])
-	Knopf[3] = guiCreateButton(285,116,87,23,"Apply",false,Fenster[1])
-	Knopf[4] = guiCreateButton(376,116,87,23,"View code",false,Fenster[1])
+	Button[2] = guiCreateButton(212,116,65,22,"-->",false,Window[1])
+	Button[3] = guiCreateButton(285,116,87,23,"Apply",false,Window[1])
+	Button[4] = guiCreateButton(376,116,87,23,"View code",false,Window[1])
 
 	-- FUNCTIONS --
 	local function applySettingsToRightSirenPoint(s)
@@ -163,7 +163,7 @@ local function preCreate()
 		guiScrollBarSetScrollPosition(Scrollbar[7], sirenSettings[s]["a"]/2.55)
 		guiScrollBarSetScrollPosition(Scrollbar[8], sirenSettings[s]["am"]/2.55)]]
 		
-		triggerServerEvent("onSireneditorSirenApply", localPlayer, setting["anzahlsirenen"], setting["sirenentype"], setting["360flag"], setting["checklosflag"], setting["randomizer"], setting["silent"], sirenSettings)
+		triggerServerEvent("onSireneditorSirenApply", localPlayer, setting["sirenCount"], setting["sirenType"], setting["360flag"], setting["checklosflag"], setting["randomizer"], setting["silent"], sirenSettings)
 	
 	end
 	-- EVENT HANDLERS --
@@ -217,7 +217,7 @@ local function preCreate()
 			outputChatBox("Falsche Eingabe! Es duerfen maximal 8 Sirenen sein, und minimal 1.", 255, 0, 0)
 			return
 		end
-		setting["anzahlsirenen"] = anzahl
+		setting["sirenCount"] = anzahl
 		for i = 1, anzahl, 1 do
 			if not(sirenSettings[i]) then
 				sirenSettings[i] = {}
@@ -243,23 +243,23 @@ local function preCreate()
 	end)
 	-- CLICK EVENTS --
 	-- APPLY --
-	addEventHandler("onClientGUIClick", Knopf[3], function()
-		triggerServerEvent("onSireneditorSirenApply", localPlayer, setting["anzahlsirenen"], setting["sirenentype"], setting["360flag"], setting["checklosflag"], setting["randomizer"], setting["silent"], sirenSettings)
+	addEventHandler("onClientGUIClick", Button[3], function()
+		triggerServerEvent("onSireneditorSirenApply", localPlayer, setting["sirenCount"], setting["sirenType"], setting["360flag"], setting["checklosflag"], setting["randomizer"], setting["silent"], sirenSettings)
 	end, false)
 	-- VIEW CODE --
-	addEventHandler("onClientGUIClick", Knopf[4], function()
-		if(guiGetVisible(Fenster[2]) == true) then
-			guiSetVisible(Fenster[2], false)
+	addEventHandler("onClientGUIClick", Button[4], function()
+		if(guiGetVisible(Window[2]) == true) then
+			guiSetVisible(Window[2], false)
 			guiSetText(source, "View code")
 		else
-			guiSetVisible(Fenster[2], true)
+			guiSetVisible(Window[2], true)
 			guiSetText(source, "Hide code")
 			local text = ""
 			text = text.."removeVehicleSirens(veh)\n"
 			
-			text = text.."addVehicleSirens(veh, "..setting["anzahlsirenen"]..", "..setting["sirenentype"]..", "..tostring(setting["360flag"])..", "..tostring(setting["checklosflag"])..", "..tostring(setting["randomizer"])..", "..tostring(setting["silent"])..")\n"
+			text = text.."addVehicleSirens(veh, "..setting["sirenCount"]..", "..setting["sirenType"]..", "..tostring(setting["360flag"])..", "..tostring(setting["checklosflag"])..", "..tostring(setting["randomizer"])..", "..tostring(setting["silent"])..")\n"
 			
-			for i = 1, setting["anzahlsirenen"], 1 do
+			for i = 1, setting["sirenCount"], 1 do
 				if(sirenSettings[i]) then
 					text = text.."setVehicleSirens(veh, "..i..", "..sirenSettings[i]["x"]..", "..sirenSettings[i]["y"]..", "..sirenSettings[i]["z"]..", "..sirenSettings[i]["r"]..", "..sirenSettings[i]["g"]..", "..sirenSettings[i]["b"]..", "..sirenSettings[i]["a"]..", "..sirenSettings[i]["am"]..")\n"
 				end
@@ -282,37 +282,37 @@ local function preCreate()
 	end, false)
 
 	-- BACK 
-	addEventHandler("onClientGUIClick", Knopf[1], function()
+	addEventHandler("onClientGUIClick", Button[1], function()
 		if(setting["usingsiren"] < 2) then return end
 		setting["usingsiren"] = setting["usingsiren"]-1
 		guiSetText(Label[11], setting["usingsiren"])
 		applySettingsToRightSirenPoint(setting["usingsiren"])
 	end, false)
-	addEventHandler("onClientGUIClick", Knopf[2], function()
+	addEventHandler("onClientGUIClick", Button[2], function()
 		if(setting["usingsiren"] > 10) then return end
-		if(setting["usingsiren"] > setting["anzahlsirenen"]-1) then return end
+		if(setting["usingsiren"] > setting["sirenCount"]-1) then return end
 		setting["usingsiren"] = setting["usingsiren"]+1
 		guiSetText(Label[11], setting["usingsiren"])
 		applySettingsToRightSirenPoint(setting["usingsiren"])
 	end, false)
 	
-	guiSetVisible(Fenster[1], false)
+	guiSetVisible(Window[1], false)
 end
 preCreate()
 
 addCommandHandler("sireneditor", function()
-	if(guiGetVisible(Fenster[1]) == true) then
-		guiSetVisible(Fenster[1], false)
-		guiSetVisible(Fenster[2], false)
+	if(guiGetVisible(Window[1]) == true) then
+		guiSetVisible(Window[1], false)
+		guiSetVisible(Window[2], false)
 		showCursor(false)
 	else
 		if(isPedInVehicle(localPlayer) == false) then
 			outputChatBox("Du musst in einem Fahrzeug sein/You must sit in a vehicle!", 255, 0, 0)
 			return
 		end
-		guiSetVisible(Fenster[1], true)
-		if(guiGetText(Knopf[4]) == "Hide code") then
-			guiSetVisible(Fenster[2], true)
+		guiSetVisible(Window[1], true)
+		if(guiGetText(Button[4]) == "Hide code") then
+			guiSetVisible(Window[2], true)
 		end
 		showCursor(true)
 		guiSetInputMode("no_binds_when_editing")
