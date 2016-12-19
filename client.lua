@@ -10,15 +10,16 @@ local gui = {
 	memos      = {}
 }
 
+local currentSirenPoint = 1
 local setting = {}
 local sirenSettings = {}
+
 setting["sirenCount"] = 1
 setting["sirenType"] = 2
 setting["360flag"] = false
 setting["checklosflag"] = true
 setting["randomizer"] = true
 setting["silent"] = false
-setting["usingsiren"] = 1
 
 sirenSettings[1] = {}
 
@@ -129,7 +130,7 @@ local function buildMainGui()
 		gui.buttons.previousSirenPoint = GuiButton(118, 117, 65, 22, "<--", false, gui.windows.main)
 		gui.buttons.nextSirenPoint = GuiButton(212, 116, 65, 22, "-->", false, gui.windows.main)
 		
-		gui.labels.currentSirenPoint = GuiLabel(191, 120, 34, 21, setting["usingsiren"], false, gui.windows.main)
+		gui.labels.currentSirenPoint = GuiLabel(191, 120, 34, 21, currentSirenPoint, false, gui.windows.main)
 		gui.labels.currentSirenPoint:setFont("default-bold-small")
 
 		gui.buttons.apply = GuiButton(285, 116, 87, 23, "Apply", false, gui.windows.main)
@@ -172,45 +173,45 @@ local function buildGui()
 	-- POSITION --
 	addEventHandler("onClientGUIChanged", gui.editBoxes.currentSirenPosX, function()
 		local pos = tonumber(source:getText())
-		sirenSettings[setting["usingsiren"]]["x"] = pos
-		applySettingsToRightSirenPoint(setting["usingsiren"])
+		sirenSettings[currentSirenPoint]["x"] = pos
+		applySettingsToRightSirenPoint(currentSirenPoint)
 	end)
 	addEventHandler("onClientGUIChanged", gui.editBoxes.currentSirenPosY, function()
 		local pos = tonumber(source:getText())
-		sirenSettings[setting["usingsiren"]]["y"] = pos
-		applySettingsToRightSirenPoint(setting["usingsiren"])
+		sirenSettings[currentSirenPoint]["y"] = pos
+		applySettingsToRightSirenPoint(currentSirenPoint)
 	end)
 	addEventHandler("onClientGUIChanged", gui.editBoxes.currentSirenPosZ, function()
 		local pos = tonumber(source:getText())
-		sirenSettings[setting["usingsiren"]]["z"] = pos
-		applySettingsToRightSirenPoint(setting["usingsiren"])
+		sirenSettings[currentSirenPoint]["z"] = pos
+		applySettingsToRightSirenPoint(currentSirenPoint)
 	end)
 
 	-- COLOR 
 	addEventHandler("onClientGUIScroll", gui.scrollBars.currentSirenColorRed, function()
 		local pos = math.round( source:getScrollPosition() * 2.55, 1, "round" )
-		sirenSettings[setting["usingsiren"]]["r"] = pos
-		applySettingsToRightSirenPoint(setting["usingsiren"])
+		sirenSettings[currentSirenPoint]["r"] = pos
+		applySettingsToRightSirenPoint(currentSirenPoint)
 	end)
 	addEventHandler("onClientGUIScroll", gui.scrollBars.currentSirenColorGreen, function()
 		local pos = math.round( source:getScrollPosition() * 2.55, 1, "round" )
-		sirenSettings[setting["usingsiren"]]["g"] = pos
-		applySettingsToRightSirenPoint(setting["usingsiren"])
+		sirenSettings[currentSirenPoint]["g"] = pos
+		applySettingsToRightSirenPoint(currentSirenPoint)
 	end)
 	addEventHandler("onClientGUIScroll", gui.scrollBars.currentSirenColorBlue, function()
 		local pos = math.round( source:getScrollPosition() * 2.55, 1, "round" )
-		sirenSettings[setting["usingsiren"]]["b"] = pos
-		applySettingsToRightSirenPoint(setting["usingsiren"])
+		sirenSettings[currentSirenPoint]["b"] = pos
+		applySettingsToRightSirenPoint(currentSirenPoint)
 	end)
 	addEventHandler("onClientGUIScroll", gui.scrollBars.currentSirenColorAlpha, function()
 		local pos = math.round( source:getScrollPosition() * 2.55, 1, "round" )
-		sirenSettings[setting["usingsiren"]]["a"] = pos
-		applySettingsToRightSirenPoint(setting["usingsiren"])
+		sirenSettings[currentSirenPoint]["a"] = pos
+		applySettingsToRightSirenPoint(currentSirenPoint)
 	end)
 	addEventHandler("onClientGUIScroll", gui.scrollBars.currentSirenColorMinAlpha, function()
 		local pos = math.round( source:getScrollPosition() * 2.55, 1, "round" )
-		sirenSettings[setting["usingsiren"]]["am"] = pos
-		applySettingsToRightSirenPoint(setting["usingsiren"])
+		sirenSettings[currentSirenPoint]["am"] = pos
+		applySettingsToRightSirenPoint(currentSirenPoint)
 	end)
 
 	-- CHANGE EVENT --
@@ -289,17 +290,17 @@ local function buildGui()
 
 	-- BACK 
 	addEventHandler("onClientGUIClick", gui.buttons.previousSirenPoint, function()
-		if(setting["usingsiren"] < 2) then return end
-		setting["usingsiren"] = setting["usingsiren"]-1
-		gui.labels.currentSirenPoint:setText(setting["usingsiren"])
-		applySettingsToRightSirenPoint(setting["usingsiren"])
+		if(currentSirenPoint < 2) then return end
+		currentSirenPoint = currentSirenPoint-1
+		gui.labels.currentSirenPoint:setText(currentSirenPoint)
+		applySettingsToRightSirenPoint(currentSirenPoint)
 	end, false)
 	addEventHandler("onClientGUIClick", gui.buttons.nextSirenPoint, function()
-		if(setting["usingsiren"] > 10) then return end
-		if(setting["usingsiren"] > setting["sirenCount"]-1) then return end
-		setting["usingsiren"] = setting["usingsiren"]+1
-		gui.labels.currentSirenPoint:setText(setting["usingsiren"])
-		applySettingsToRightSirenPoint(setting["usingsiren"])
+		if(currentSirenPoint > 10) then return end
+		if(currentSirenPoint > setting["sirenCount"]-1) then return end
+		currentSirenPoint = currentSirenPoint+1
+		gui.labels.currentSirenPoint:setText(currentSirenPoint)
+		applySettingsToRightSirenPoint(currentSirenPoint)
 	end, false)
 	
 end
