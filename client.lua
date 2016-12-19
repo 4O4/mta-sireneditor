@@ -31,92 +31,120 @@ sirenSettings[1]["b"] = 0
 sirenSettings[1]["a"] = 200
 sirenSettings[1]["am"] = 200
 
-local function buildGui()
-	outputDebugString("PreCreate sireneditor-guielements")
-	local screenWidth, screenHeight = GuiElement.getScreenSize()
-	
+local screenWidth, screenHeight = GuiElement.getScreenSize()
+
+local function buildOutputGui()
 	gui.windows.output = GuiWindow(1200 / 1920 * screenWidth, 114 / 1080 * screenHeight, 307, 176, "Output", false)
 	gui.windows.output:setVisible(false)
 
 	gui.memos.output = GuiMemo(9, 23, 291, 145, "", false, gui.windows.output)
 	gui.memos.output:setReadOnly(true)
+end    
 
- 
-    local mainWindowWidth, mainWindowHeight = 475, 290
-    local mainWindowPosX = (screenWidth / 2) - (mainWindowWidth / 2)
-    local mainWindowPosY = 0 -- (screenHeight / 2) - (mainWindowHeight / 2)
+local function buildMainGui()
+	function buildGlobalSettingsGui()
+		local mainWindowWidth, mainWindowHeight = 475, 290
+	    local mainWindowPosX = (screenWidth / 2) - (mainWindowWidth / 2)
+	    local mainWindowPosY = 0 -- (screenHeight / 2) - (mainWindowHeight / 2)
 
-	gui.windows.main = GuiWindow(mainWindowPosX, mainWindowPosY, mainWindowWidth, mainWindowHeight, "Siren Editor by Noneatme", false)
+		gui.windows.main = GuiWindow(mainWindowPosX, mainWindowPosY, mainWindowWidth, mainWindowHeight, "Siren Editor by Noneatme", false)
+		gui.windows.main:setVisible(false)
+			
+		gui.labels.globalSettings = GuiLabel(14, 22, 109, 16, "Global Settings:", false, gui.windows.main)
+		gui.labels.globalSettings:setFont("default-bold-small")
+
+		gui.labels.underline = GuiLabel(11, 26, 135, 15, ("_"):rep(15), false, gui.windows.main)
+		gui.labels.underline:setColor(0, 255, 0)
+		gui.labels.underline:setFont("default-bold-small")
+
+		gui.labels.sirenCount = GuiLabel(12, 49, 138, 15, "Number of Sirens:(1-10)", false, gui.windows.main)
+		gui.labels.sirenCount:setFont("default-bold-small")
+
+		gui.editBoxes.sirenCount = GuiEdit(156, 45, 35, 24, setting["sirenCount"], false, gui.windows.main)
 		
-	gui.labels.globalSettings = GuiLabel(14, 22, 109, 16, "Global Settings:", false, gui.windows.main)
-	gui.labels.globalSettings:setFont("default-bold-small")
-	gui.labels.underline = GuiLabel(11, 26, 135, 15, "___________________", false, gui.windows.main)
-	gui.labels.underline:setColor(0, 255, 0)
-	gui.labels.underline:setFont("default-bold-small")
-	gui.labels.sirenCount = GuiLabel(12, 49, 138, 15, "Number of Sirens:(1-10)", false, gui.windows.main)
-	gui.labels.sirenCount:setFont("default-bold-small")
-	gui.editBoxes.sirenCount = GuiEdit(156, 45, 35, 24, setting["sirenCount"], false, gui.windows.main)
-	gui.labels.sirenType = GuiLabel(11, 79, 138, 15, "Siren type: (1-?)", false, gui.windows.main)
-	gui.labels.sirenType:setFont("default-bold-small")
-	gui.editBoxes.sirenType = GuiEdit(156, 75, 35, 24, setting["sirenType"], false, gui.windows.main)
-	gui.labels.separator = GuiLabel(10, 99, 458, 16, "______________________________________________________________________________", false, gui.windows.main)
-	gui.checkBoxes.enable360 = GuiCheckBox(226, 49, 99, 20, "360 Flag", false, false, gui.windows.main)
-	gui.checkBoxes.enable360:setFont("default-bold-small")
-	gui.checkBoxes.enableLOSCheck = GuiCheckBox(226, 73, 99, 20, "checkLosFlag", false, false, gui.windows.main)
-	gui.checkBoxes.enableLOSCheck:setFont("default-bold-small")
-	gui.checkBoxes.enableRandomiser = GuiCheckBox(327, 50, 99, 20, "Randomizer", false, false, gui.windows.main)
-	gui.checkBoxes.enableRandomiser:setFont("default-bold-small")
-	gui.checkBoxes.enableSilent = GuiCheckBox(327, 74, 99, 20, "SilentFlag", false, false, gui.windows.main)
-	gui.checkBoxes.enableSilent:setFont("default-bold-small")
-	
-	-- CHECKBOX --
-	gui.checkBoxes.enable360:setSelected(setting["360flag"])
-	gui.checkBoxes.enableLOSCheck:setSelected(setting["checklosflag"])
-	gui.checkBoxes.enableRandomiser:setSelected(setting["randomizer"])
-	gui.checkBoxes.enableSilent:setSelected(setting["silent"])
-	
-	gui.tabPanels.main = GuiTabPanel(9, 148, 456, 129, false, gui.windows.main)
-	gui.tabs.sirenPosition = GuiTab("Position", gui.tabPanels.main)	
-	gui.tabs.sirenColor = GuiTab("Color", gui.tabPanels.main)
-	
-	gui.editBoxes.currentSirenPosX = GuiEdit(24, 17, 216, 24, "0", false, gui.tabs.sirenPosition)
-	gui.editBoxes.currentSirenPosY = GuiEdit(24, 40, 216, 24, "0", false, gui.tabs.sirenPosition)
-	gui.editBoxes.currentSirenPosZ = GuiEdit(23, 64, 216, 24, "0", false, gui.tabs.sirenPosition)
-	gui.labels.currentSirenPosAll = GuiLabel(243, 18, 141, 67, "X, Y, Z\n0, 0, 0", false, gui.tabs.sirenPosition)
-	gui.labels.currentSirenPosAll:setVerticalAlign("center")
-	gui.labels.currentSirenPosAll:setHorizontalAlign("center", false)
-	gui.labels.currentSirenPosAll:setFont("default-bold-small")
-	
-	
+		gui.labels.sirenType = GuiLabel(11, 79, 138, 15, "Siren type: (1-?)", false, gui.windows.main)
+		gui.labels.sirenType:setFont("default-bold-small")
+		
+		gui.editBoxes.sirenType = GuiEdit(156, 75, 35, 24, setting["sirenType"], false, gui.windows.main)
+		
+		gui.checkBoxes.enable360 = GuiCheckBox(226, 49, 99, 20, "360 Flag", false, false, gui.windows.main)
+		gui.checkBoxes.enable360:setFont("default-bold-small")
+		gui.checkBoxes.enable360:setSelected(setting["360flag"])
+		
+		gui.checkBoxes.enableLOSCheck = GuiCheckBox(226, 73, 99, 20, "checkLosFlag", false, false, gui.windows.main)
+		gui.checkBoxes.enableLOSCheck:setFont("default-bold-small")
+		gui.checkBoxes.enableLOSCheck:setSelected(setting["checklosflag"])
+		
+		gui.checkBoxes.enableRandomiser = GuiCheckBox(327, 50, 99, 20, "Randomizer", false, false, gui.windows.main)
+		gui.checkBoxes.enableRandomiser:setFont("default-bold-small")
+		gui.checkBoxes.enableRandomiser:setSelected(setting["randomizer"])
+		
+		gui.checkBoxes.enableSilent = GuiCheckBox(327, 74, 99, 20, "SilentFlag", false, false, gui.windows.main)
+		gui.checkBoxes.enableSilent:setFont("default-bold-small")
+		gui.checkBoxes.enableSilent:setSelected(setting["silent"])
+		
+		gui.labels.separator = GuiLabel(10, 99, 458, 16, ("_"):rep(78), false, gui.windows.main)
+	end
 
-	
-	gui.scrollBars.currentSirenColorRed = GuiScrollBar(11, 7, 168, 23, true, false, gui.tabs.sirenColor)
-	gui.scrollBars.currentSirenColorGreen = GuiScrollBar(11, 37, 168, 23, true, false, gui.tabs.sirenColor)
-	gui.scrollBars.currentSirenColorBlue = GuiScrollBar(11, 70, 168, 23, true, false, gui.tabs.sirenColor)
-	
-	gui.labels.currentSirenColorAll = GuiLabel(186, 12, 100, 77, "R, G, B\n0, 0, 0", false, gui.tabs.sirenColor)
-	gui.labels.currentSirenColorAll:setVerticalAlign("center")
-	gui.labels.currentSirenColorAll:setHorizontalAlign("center", false)
-	gui.labels.currentSirenColorAll:setFont("default-bold-small")
-	
-	
-	gui.scrollBars.currentSirenColorAlpha = GuiScrollBar(310, 2, 22, 102, false, false, gui.tabs.sirenColor)
-	gui.scrollBars.currentSirenColorMinAlpha = GuiScrollBar(334, 3, 22, 102, false, false, gui.tabs.sirenColor)
-	
-	gui.labels.currentSirenAlpha = GuiLabel(362, 33, 85, 36, "Alpha: 0\nMinimum: 0", false, gui.tabs.sirenColor)
-	gui.labels.currentSirenAlpha:setHorizontalAlign("center", false)
-	gui.labels.currentSirenAlpha:setFont("default-bold-small")
-	gui.tabs.credits = GuiTab("Credits", gui.tabPanels.main)
-	gui.labels.creditsInfo = GuiLabel(6, 4, 447, 95, "This GUI-Siren Editor was made by Noneatme.\nDieser Sirenen-Editor wurde von Noneatme erstellt.\n\nThanks to the MTA developer for the awesome siren-functions!\n\nIf you have any question, you can PM me via www.forum.mta-sa.de", false, gui.tabs.credits)
-	gui.labels.creditsInfo:setFont("default-bold-small")
-	gui.labels.currentSirenPoint = GuiLabel(11, 118, 102, 12, "Using siren Point: ", false, gui.windows.main)
-	gui.labels.currentSirenPoint:setFont("default-bold-small")
-	gui.buttons.previousSirenPoint = GuiButton(118, 117, 65, 22, "<--", false, gui.windows.main)
-	gui.labels.currentSirenPoint = GuiLabel(191, 120, 34, 21, setting["usingsiren"], false, gui.windows.main)
-	gui.labels.currentSirenPoint:setFont("default-bold-small")
-	gui.buttons.nextSirenPoint = GuiButton(212, 116, 65, 22, "-->", false, gui.windows.main)
-	gui.buttons.apply = GuiButton(285, 116, 87, 23, "Apply", false, gui.windows.main)
-	gui.buttons.toggleOutputWindow = GuiButton(376, 116, 87, 23, "View code", false, gui.windows.main)
+	function buildSirenPointsSettingsGui()
+		gui.tabPanels.main = GuiTabPanel(9, 148, 456, 129, false, gui.windows.main)
+		
+		gui.tabs.sirenPosition = GuiTab("Position", gui.tabPanels.main)	
+		gui.tabs.sirenColor = GuiTab("Color", gui.tabPanels.main)
+		
+		gui.editBoxes.currentSirenPosX = GuiEdit(24, 17, 216, 24, "0", false, gui.tabs.sirenPosition)
+		gui.editBoxes.currentSirenPosY = GuiEdit(24, 40, 216, 24, "0", false, gui.tabs.sirenPosition)
+		gui.editBoxes.currentSirenPosZ = GuiEdit(23, 64, 216, 24, "0", false, gui.tabs.sirenPosition)
+
+		gui.labels.currentSirenPosAll = GuiLabel(243, 18, 141, 67, "X, Y, Z\n0, 0, 0", false, gui.tabs.sirenPosition)
+		gui.labels.currentSirenPosAll:setVerticalAlign("center")
+		gui.labels.currentSirenPosAll:setHorizontalAlign("center", false)
+		gui.labels.currentSirenPosAll:setFont("default-bold-small")
+		
+		gui.scrollBars.currentSirenColorRed = GuiScrollBar(11, 7, 168, 23, true, false, gui.tabs.sirenColor)
+		gui.scrollBars.currentSirenColorGreen = GuiScrollBar(11, 37, 168, 23, true, false, gui.tabs.sirenColor)
+		gui.scrollBars.currentSirenColorBlue = GuiScrollBar(11, 70, 168, 23, true, false, gui.tabs.sirenColor)
+		
+		gui.labels.currentSirenColorAll = GuiLabel(186, 12, 100, 77, "R, G, B\n0, 0, 0", false, gui.tabs.sirenColor)
+		gui.labels.currentSirenColorAll:setVerticalAlign("center")
+		gui.labels.currentSirenColorAll:setHorizontalAlign("center", false)
+		gui.labels.currentSirenColorAll:setFont("default-bold-small")
+		
+		gui.scrollBars.currentSirenColorAlpha = GuiScrollBar(310, 2, 22, 102, false, false, gui.tabs.sirenColor)
+		gui.scrollBars.currentSirenColorMinAlpha = GuiScrollBar(334, 3, 22, 102, false, false, gui.tabs.sirenColor)
+		
+		gui.labels.currentSirenAlpha = GuiLabel(362, 33, 85, 36, "Alpha: 0\nMinimum: 0", false, gui.tabs.sirenColor)
+		gui.labels.currentSirenAlpha:setHorizontalAlign("center", false)
+		gui.labels.currentSirenAlpha:setFont("default-bold-small")
+
+		gui.tabs.credits = GuiTab("Credits", gui.tabPanels.main)
+		
+		gui.labels.creditsInfo = GuiLabel(6, 4, 447, 95, "", false, gui.tabs.credits)
+		gui.labels.creditsInfo:setFont("default-bold-small")
+		gui.labels.creditsInfo:setText("This GUI-Siren Editor was made by Noneatme.\nDieser Sirenen-Editor wurde von Noneatme erstellt.\n\nThanks to the MTA developer for the awesome siren-functions!\n\nIf you have any question, you can PM me via www.forum.mta-sa.de")
+
+		gui.labels.currentSirenPoint = GuiLabel(11, 118, 102, 12, "Using siren Point: ", false, gui.windows.main)
+		gui.labels.currentSirenPoint:setFont("default-bold-small")
+
+		gui.buttons.previousSirenPoint = GuiButton(118, 117, 65, 22, "<--", false, gui.windows.main)
+		gui.buttons.nextSirenPoint = GuiButton(212, 116, 65, 22, "-->", false, gui.windows.main)
+		
+		gui.labels.currentSirenPoint = GuiLabel(191, 120, 34, 21, setting["usingsiren"], false, gui.windows.main)
+		gui.labels.currentSirenPoint:setFont("default-bold-small")
+
+		gui.buttons.apply = GuiButton(285, 116, 87, 23, "Apply", false, gui.windows.main)
+		gui.buttons.toggleOutputWindow = GuiButton(376, 116, 87, 23, "View code", false, gui.windows.main)
+	end
+
+	buildGlobalSettingsGui()
+	buildSirenPointsSettingsGui()
+end
+
+local function buildGui()
+	outputDebugString("PreCreate sireneditor-guielements")
+
+	buildOutputGui()
+	buildMainGui()
 
 	-- FUNCTIONS --
 	local function applySettingsToRightSirenPoint(s)
@@ -136,26 +164,11 @@ local function buildGui()
 		gui.labels.currentSirenAlpha:setText("Alpha: " .. sirenSettings[s]["a"] .. "\nMinimum: " .. sirenSettings[s]["am"])
 		gui.labels.currentSirenColorAll:setColor( sirenSettings[s]["r"], sirenSettings[s]["g"], sirenSettings[s]["b"], sirenSettings[s]["a"])
 		
-	--	gui.editBoxes.currentSirenPosX:setText(sirenSettings[s]["x"]);
-	--	gui.editBoxes.currentSirenPosY:setText(sirenSettings[s]["y"]);
-	--	gui.editBoxes.currentSirenPosZ:setText(sirenSettings[s]["z"]);
-		
-		--[[	
-		guiScrollBarSetScrollPosition(gui.editBoxes.currentSirenPosX, (sirenSettings[s]["x"]+5) * 200 / 20)
-		guiScrollBarSetScrollPosition(gui.editBoxes.currentSirenPosY, (sirenSettings[s]["y"]+5) * 200 / 20)
-		guiScrollBarSetScrollPosition(gui.editBoxes.currentSirenPosZ, (sirenSettings[s]["z"]+5) * 200 / 20)
-		
-		guiScrollBarSetScrollPosition(gui.scrollBars.currentSirenColorRed, sirenSettings[s]["r"] / 2.55)
-		guiScrollBarSetScrollPosition(gui.scrollBars.currentSirenColorGreen, sirenSettings[s]["g"] / 2.55)
-		guiScrollBarSetScrollPosition(gui.scrollBars.currentSirenColorBlue, sirenSettings[s]["b"] / 2.55)
-		guiScrollBarSetScrollPosition(gui.scrollBars.currentSirenColorAlpha, sirenSettings[s]["a"] / 2.55)
-		guiScrollBarSetScrollPosition(gui.scrollBars.currentSirenColorMinAlpha, sirenSettings[s]["am"] / 2.55)]]
 		
 		triggerServerEvent("onSireneditorSirenApply", localPlayer, setting["sirenCount"], setting["sirenType"], setting["360flag"], setting["checklosflag"], setting["randomizer"], setting["silent"], sirenSettings)
 	
 	end
-	-- EVENT HANDLERS --
-	-- ROLL EVENT ODER WIE MAN DAS NENNT :D --
+
 	-- POSITION --
 	addEventHandler("onClientGUIChanged", gui.editBoxes.currentSirenPosX, function()
 		local pos = tonumber(source:getText())
@@ -172,6 +185,7 @@ local function buildGui()
 		sirenSettings[setting["usingsiren"]]["z"] = pos
 		applySettingsToRightSirenPoint(setting["usingsiren"])
 	end)
+
 	-- COLOR 
 	addEventHandler("onClientGUIScroll", gui.scrollBars.currentSirenColorRed, function()
 		local pos = math.round( source:getScrollPosition() * 2.55, 1, "round" )
@@ -198,6 +212,7 @@ local function buildGui()
 		sirenSettings[setting["usingsiren"]]["am"] = pos
 		applySettingsToRightSirenPoint(setting["usingsiren"])
 	end)
+
 	-- CHANGE EVENT --
 	addEventHandler("onClientGUIChanged", gui.editBoxes.sirenCount, function()
 		local anzahl = tonumber(source:getText())
@@ -229,11 +244,13 @@ local function buildGui()
 		end
 		setting["sirenentyp"] = anzahl
 	end)
+
 	-- CLICK EVENTS --
 	-- APPLY --
 	addEventHandler("onClientGUIClick", gui.buttons.apply, function()
 		triggerServerEvent("onSireneditorSirenApply", localPlayer, setting["sirenCount"], setting["sirenType"], setting["360flag"], setting["checklosflag"], setting["randomizer"], setting["silent"], sirenSettings)
 	end, false)
+
 	-- VIEW CODE --
 	addEventHandler("onClientGUIClick", gui.buttons.toggleOutputWindow, function()
 		if(gui.windows.output:getVisible() == true) then
@@ -255,6 +272,7 @@ local function buildGui()
 			gui.memos.output:setText(text)
 		end
 	end, false)
+
 	-- CHECKBOXES --
 	addEventHandler("onClientGUIClick", gui.checkBoxes.enable360, function()
 		setting["360flag"] = source:getSelected()
@@ -284,7 +302,6 @@ local function buildGui()
 		applySettingsToRightSirenPoint(setting["usingsiren"])
 	end, false)
 	
-	gui.windows.main:setVisible(false)
 end
 buildGui()
 
