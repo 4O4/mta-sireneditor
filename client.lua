@@ -31,7 +31,7 @@ sirenSettings[1]["b"] = 0
 sirenSettings[1]["a"] = 200
 sirenSettings[1]["am"] = 200
 
-local function preCreate()
+local function buildGui()
 	outputDebugString("PreCreate sireneditor-guielements")
 	local screenWidth, screenHeight = GuiElement.getScreenSize()
 	
@@ -286,7 +286,7 @@ local function preCreate()
 	
 	gui.windows.main:setVisible(false)
 end
-preCreate()
+buildGui()
 
 addCommandHandler("sireneditor", function()
 	if(gui.windows.main:getVisible() == true) then
