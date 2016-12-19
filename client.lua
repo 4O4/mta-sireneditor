@@ -140,7 +140,7 @@ local function buildMainGui()
 		
 		gui.labels.creditsInfo = GuiLabel(6, 4, 447, 95, "", false, gui.tabs.credits)
 		gui.labels.creditsInfo:setFont("default-bold-small")
-		gui.labels.creditsInfo:setText("This GUI-Siren Editor was made by Noneatme.\nDieser Sirenen-Editor wurde von Noneatme erstellt.\n\nThanks to the MTA developer for the awesome siren-functions!\n\nIf you have any question, you can PM me via www.forum.mta-sa.de")
+		gui.labels.creditsInfo:setText("Original author: Noneatme" .. string.rep(" ", 70) .. "License: GPLv2\nUpdated and maintained by: Pawelo\n\nYou can report issues or create pull requests on GitHub:\n\nhttps://github.com/4O4/mta-sireneditor\n\n")
 
 		gui.labels.currentSirenPoint = GuiLabel(11, 118, 102, 12, "Using siren Point: ", false, gui.windows.main)
 		gui.labels.currentSirenPoint:setFont("default-bold-small")
