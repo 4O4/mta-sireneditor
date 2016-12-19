@@ -1,3 +1,6 @@
+local VERSION = "1.1.0"
+local screenWidth, screenHeight = GuiElement.getScreenSize()
+
 local gui = {
 	windows    = {}, 
 	tabPanels  = {}, 
@@ -11,6 +14,7 @@ local gui = {
 }
 
 local currentSirenPoint = 1
+
 local defaultSettings = {
 	global = {
 		sirenCount       = 1,
@@ -19,25 +23,34 @@ local defaultSettings = {
 		enableLOSCheck   = true,
 		enableRandomiser = false,
 		enableSilent     = false,
+	},
+	siren =	{
+		posX = 0,
+		posY = 0,
+		posZ = 2,
+		colorR = 255,
+		colorG = 255,
+		colorB = 255,	
 	}
 }
+
 local sirenSettings = {}
+
+sirenSettings[1] = {}
+sirenSettings[1]["posX"] = 0
+sirenSettings[1]["posY"] = 0
+sirenSettings[1]["posZ"] = 0
+sirenSettings[1]["colorR"] = 0
+sirenSettings[1]["colorG"] = 0
+sirenSettings[1]["colorB"] = 0
+sirenSettings[1]["alpha"] = 200
+sirenSettings[1]["minAlpha"] = 200
+
+
 
 function GuiElement:getNumber()
 	return tonumber(self:getText())
 end
-
-sirenSettings[1] = {}
-sirenSettings[1]["x"] = 0
-sirenSettings[1]["y"] = 0
-sirenSettings[1]["z"] = 0
-sirenSettings[1]["r"] = 0
-sirenSettings[1]["g"] = 0
-sirenSettings[1]["b"] = 0
-sirenSettings[1]["a"] = 200
-sirenSettings[1]["am"] = 200
-
-local screenWidth, screenHeight = GuiElement.getScreenSize()
 
 local function buildOutputGui()
 	gui.windows.output = GuiWindow(1200 / 1920 * screenWidth, 114 / 1080 * screenHeight, 307, 176, "Output", false)
@@ -53,7 +66,7 @@ local function buildMainGui()
 	    local mainWindowPosX = (screenWidth / 2) - (mainWindowWidth / 2)
 	    local mainWindowPosY = 0 -- (screenHeight / 2) - (mainWindowHeight / 2)
 
-		gui.windows.main = GuiWindow(mainWindowPosX, mainWindowPosY, mainWindowWidth, mainWindowHeight, "Siren Editor by Noneatme", false)
+		gui.windows.main = GuiWindow(mainWindowPosX, mainWindowPosY, mainWindowWidth, mainWindowHeight, "Siren Editor v" .. VERSION, false)
 		gui.windows.main:setVisible(false)
 			
 		gui.labels.globalSettings = GuiLabel(14, 22, 109, 16, "Global Settings:", false, gui.windows.main)
@@ -63,12 +76,12 @@ local function buildMainGui()
 		gui.labels.underline:setColor(0, 255, 0)
 		gui.labels.underline:setFont("default-bold-small")
 
-		gui.labels.sirenCount = GuiLabel(12, 49, 138, 15, "Number of Sirens:(1-10)", false, gui.windows.main)
+		gui.labels.sirenCount = GuiLabel(12, 49, 138, 15, "Number of Sirens: (1-8)", false, gui.windows.main)
 		gui.labels.sirenCount:setFont("default-bold-small")
 
 		gui.editBoxes.sirenCount = GuiEdit(156, 45, 35, 24, defaultSettings.global.sirenCount, false, gui.windows.main)
 		
-		gui.labels.sirenType = GuiLabel(11, 79, 138, 15, "Siren type: (1-?)", false, gui.windows.main)
+		gui.labels.sirenType = GuiLabel(11, 79, 138, 15, "Siren type: (1-6)", false, gui.windows.main)
 		gui.labels.sirenType:setFont("default-bold-small")
 		
 		gui.editBoxes.sirenType = GuiEdit(156, 75, 35, 24, defaultSettings.global.sirenType, false, gui.windows.main)
@@ -156,19 +169,19 @@ local function buildGui()
 	local function applySettingsToRightSirenPoint(s)
 		if not(sirenSettings[s]) then
 			sirenSettings[s] = {}
-			sirenSettings[s]["x"] = 0
-			sirenSettings[s]["y"] = 0
-			sirenSettings[s]["z"] = 0
-			sirenSettings[s]["r"] = 0
-			sirenSettings[s]["g"] = 0
-			sirenSettings[s]["b"] = 0
-			sirenSettings[s]["a"] = 200
-			sirenSettings[s]["am"] = 200
+			sirenSettings[s]["posX"] = 0
+			sirenSettings[s]["posY"] = 0
+			sirenSettings[s]["posZ"] = 0
+			sirenSettings[s]["colorR"] = 0
+			sirenSettings[s]["colorG"] = 0
+			sirenSettings[s]["colorB"] = 0
+			sirenSettings[s]["alpha"] = 200
+			sirenSettings[s]["minAlpha"] = 200
 		end
-		gui.labels.currentSirenPosAll:setText("X, Y, Z\n" .. sirenSettings[s]["x"] .. ", " .. sirenSettings[s]["y"] .. ", " .. sirenSettings[s]["z"])
-		gui.labels.currentSirenColorAll:setText("R, G, B\n" .. sirenSettings[s]["r"] .. ", " .. sirenSettings[s]["g"] .. ", " .. sirenSettings[s]["b"])
-		gui.labels.currentSirenAlpha:setText("Alpha: " .. sirenSettings[s]["a"] .. "\nMinimum: " .. sirenSettings[s]["am"])
-		gui.labels.currentSirenColorAll:setColor( sirenSettings[s]["r"], sirenSettings[s]["g"], sirenSettings[s]["b"], sirenSettings[s]["a"])
+		gui.labels.currentSirenPosAll:setText("X, Y, Z\n" .. sirenSettings[s]["posX"] .. ", " .. sirenSettings[s]["posY"] .. ", " .. sirenSettings[s]["posZ"])
+		gui.labels.currentSirenColorAll:setText("R, G, B\n" .. sirenSettings[s]["colorR"] .. ", " .. sirenSettings[s]["colorG"] .. ", " .. sirenSettings[s]["colorB"])
+		gui.labels.currentSirenAlpha:setText("Alpha: " .. sirenSettings[s]["alpha"] .. "\nMinimum: " .. sirenSettings[s]["minAlpha"])
+		gui.labels.currentSirenColorAll:setColor( sirenSettings[s]["colorR"], sirenSettings[s]["colorG"], sirenSettings[s]["colorB"], sirenSettings[s]["alpha"])
 		
 		
 		triggerServerEvent("onSireneditorSirenApply", localPlayer, gui.editBoxes.sirenCount:getNumber(), gui.editBoxes.sirenType:getNumber(), gui.checkBoxes.enable360:getSelected(), gui.checkBoxes.enableLOSCheck:getSelected(), gui.checkBoxes.enableRandomiser:getSelected(), gui.checkBoxes.enableSilent:getSelected(), sirenSettings)
@@ -178,44 +191,44 @@ local function buildGui()
 	-- POSITION --
 	addEventHandler("onClientGUIChanged", gui.editBoxes.currentSirenPosX, function()
 		local pos = tonumber(source:getText())
-		sirenSettings[currentSirenPoint]["x"] = pos
+		sirenSettings[currentSirenPoint]["posX"] = pos
 		applySettingsToRightSirenPoint(currentSirenPoint)
 	end)
 	addEventHandler("onClientGUIChanged", gui.editBoxes.currentSirenPosY, function()
 		local pos = tonumber(source:getText())
-		sirenSettings[currentSirenPoint]["y"] = pos
+		sirenSettings[currentSirenPoint]["posY"] = pos
 		applySettingsToRightSirenPoint(currentSirenPoint)
 	end)
 	addEventHandler("onClientGUIChanged", gui.editBoxes.currentSirenPosZ, function()
 		local pos = tonumber(source:getText())
-		sirenSettings[currentSirenPoint]["z"] = pos
+		sirenSettings[currentSirenPoint]["posZ"] = pos
 		applySettingsToRightSirenPoint(currentSirenPoint)
 	end)
 
 	-- COLOR 
 	addEventHandler("onClientGUIScroll", gui.scrollBars.currentSirenColorRed, function()
 		local pos = math.round( source:getScrollPosition() * 2.55, 1, "round" )
-		sirenSettings[currentSirenPoint]["r"] = pos
+		sirenSettings[currentSirenPoint]["colorR"] = pos
 		applySettingsToRightSirenPoint(currentSirenPoint)
 	end)
 	addEventHandler("onClientGUIScroll", gui.scrollBars.currentSirenColorGreen, function()
 		local pos = math.round( source:getScrollPosition() * 2.55, 1, "round" )
-		sirenSettings[currentSirenPoint]["g"] = pos
+		sirenSettings[currentSirenPoint]["colorG"] = pos
 		applySettingsToRightSirenPoint(currentSirenPoint)
 	end)
 	addEventHandler("onClientGUIScroll", gui.scrollBars.currentSirenColorBlue, function()
 		local pos = math.round( source:getScrollPosition() * 2.55, 1, "round" )
-		sirenSettings[currentSirenPoint]["b"] = pos
+		sirenSettings[currentSirenPoint]["colorB"] = pos
 		applySettingsToRightSirenPoint(currentSirenPoint)
 	end)
 	addEventHandler("onClientGUIScroll", gui.scrollBars.currentSirenColorAlpha, function()
 		local pos = math.round( source:getScrollPosition() * 2.55, 1, "round" )
-		sirenSettings[currentSirenPoint]["a"] = pos
+		sirenSettings[currentSirenPoint]["alpha"] = pos
 		applySettingsToRightSirenPoint(currentSirenPoint)
 	end)
 	addEventHandler("onClientGUIScroll", gui.scrollBars.currentSirenColorMinAlpha, function()
 		local pos = math.round( source:getScrollPosition() * 2.55, 1, "round" )
-		sirenSettings[currentSirenPoint]["am"] = pos
+		sirenSettings[currentSirenPoint]["minAlpha"] = pos
 		applySettingsToRightSirenPoint(currentSirenPoint)
 	end)
 
@@ -230,14 +243,14 @@ local function buildGui()
 		for i = 1, anzahl, 1 do
 			if not(sirenSettings[i]) then
 				sirenSettings[i] = {}
-				sirenSettings[i]["x"] = 0
-				sirenSettings[i]["y"] = 0
-				sirenSettings[i]["z"] = 0
-				sirenSettings[i]["r"] = 0
-				sirenSettings[i]["g"] = 0
-				sirenSettings[i]["b"] = 0
-				sirenSettings[i]["a"] = 200
-				sirenSettings[i]["am"] = 200
+				sirenSettings[i]["posX"] = 0
+				sirenSettings[i]["posY"] = 0
+				sirenSettings[i]["posZ"] = 0
+				sirenSettings[i]["colorR"] = 0
+				sirenSettings[i]["colorG"] = 0
+				sirenSettings[i]["colorB"] = 0
+				sirenSettings[i]["alpha"] = 200
+				sirenSettings[i]["minAlpha"] = 200
 			end
 		end
 	end)
@@ -272,7 +285,7 @@ local function buildGui()
 			
 			for i = 1, gui.editBoxes.sirenCount:getNumber(), 1 do
 				if(sirenSettings[i]) then
-					text = text .. "setVehicleSirens(veh, " .. i .. ", " .. sirenSettings[i]["x"] .. ", " .. sirenSettings[i]["y"] .. ", " .. sirenSettings[i]["z"] .. ", " .. sirenSettings[i]["r"] .. ", " .. sirenSettings[i]["g"] .. ", " .. sirenSettings[i]["b"] .. ", " .. sirenSettings[i]["a"] .. ", " .. sirenSettings[i]["am"] .. ")\n"
+					text = text .. "setVehicleSirens(veh, " .. i .. ", " .. sirenSettings[i]["posX"] .. ", " .. sirenSettings[i]["posY"] .. ", " .. sirenSettings[i]["posZ"] .. ", " .. sirenSettings[i]["colorR"] .. ", " .. sirenSettings[i]["colorG"] .. ", " .. sirenSettings[i]["colorB"] .. ", " .. sirenSettings[i]["alpha"] .. ", " .. sirenSettings[i]["minAlpha"] .. ")\n"
 				end
 			end
 			gui.memos.output:setText(text)
