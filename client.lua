@@ -33,15 +33,14 @@ sirenSettings[1]["am"] = 200
 
 local function preCreate()
 	outputDebugString("PreCreate sireneditor-guielements")
-	local sWidth, sHeight = guiGetScreenSize()
+	local screenWidth, screenHeight = guiGetScreenSize()
  
     local Width,Height = 475,290
-    local X = (sWidth/2) - (Width/2)
-    local Y = (sHeight/2) - (Height/2)
+    local X = (screenWidth/2) - (Width/2)
+    local Y = (screenHeight/2) - (Height/2)
 	
 	gui.windows.main = guiCreateWindow(X, 0, Width, Height,"Siren Editor by Noneatme",false)
-	local sx, sy = guiGetScreenSize()
-	gui.windows.output = guiCreateWindow(1200/1920*sx,114/1080*sy,307,176,"Output",false)
+	gui.windows.output = guiCreateWindow(1200/1920*screenWidth,114/1080*screenHeight,307,176,"Output",false)
 	gui.memos.output = guiCreateMemo(9,23,291,145,"",false,gui.windows.output)
 	guiMemoSetReadOnly(gui.memos.output, true)
 	guiSetVisible(gui.windows.output, false)
