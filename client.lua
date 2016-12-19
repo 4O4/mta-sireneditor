@@ -11,18 +11,23 @@ local gui = {
 }
 
 local currentSirenPoint = 1
-local setting = {}
+local defaultSettings = {
+	global = {
+		sirenCount       = 1,
+		sirenType        = 2,
+		enable360        = true,
+		enableLOSCheck   = true,
+		enableRandomiser = false,
+		enableSilent     = false,
+	}
+}
 local sirenSettings = {}
 
-setting["sirenCount"] = 1
-setting["sirenType"] = 2
-setting["360flag"] = false
-setting["checklosflag"] = true
-setting["randomizer"] = true
-setting["silent"] = false
+function GuiElement:getNumber()
+	return tonumber(self:getText())
+end
 
 sirenSettings[1] = {}
-
 sirenSettings[1]["x"] = 0
 sirenSettings[1]["y"] = 0
 sirenSettings[1]["z"] = 0
@@ -61,28 +66,28 @@ local function buildMainGui()
 		gui.labels.sirenCount = GuiLabel(12, 49, 138, 15, "Number of Sirens:(1-10)", false, gui.windows.main)
 		gui.labels.sirenCount:setFont("default-bold-small")
 
-		gui.editBoxes.sirenCount = GuiEdit(156, 45, 35, 24, setting["sirenCount"], false, gui.windows.main)
+		gui.editBoxes.sirenCount = GuiEdit(156, 45, 35, 24, defaultSettings.global.sirenCount, false, gui.windows.main)
 		
 		gui.labels.sirenType = GuiLabel(11, 79, 138, 15, "Siren type: (1-?)", false, gui.windows.main)
 		gui.labels.sirenType:setFont("default-bold-small")
 		
-		gui.editBoxes.sirenType = GuiEdit(156, 75, 35, 24, setting["sirenType"], false, gui.windows.main)
+		gui.editBoxes.sirenType = GuiEdit(156, 75, 35, 24, defaultSettings.global.sirenType, false, gui.windows.main)
 		
 		gui.checkBoxes.enable360 = GuiCheckBox(226, 49, 99, 20, "360 Flag", false, false, gui.windows.main)
 		gui.checkBoxes.enable360:setFont("default-bold-small")
-		gui.checkBoxes.enable360:setSelected(setting["360flag"])
+		gui.checkBoxes.enable360:setSelected(defaultSettings.global.enable360)
 		
 		gui.checkBoxes.enableLOSCheck = GuiCheckBox(226, 73, 99, 20, "checkLosFlag", false, false, gui.windows.main)
 		gui.checkBoxes.enableLOSCheck:setFont("default-bold-small")
-		gui.checkBoxes.enableLOSCheck:setSelected(setting["checklosflag"])
+		gui.checkBoxes.enableLOSCheck:setSelected(defaultSettings.global.enableLOSCheck)
 		
-		gui.checkBoxes.enableRandomiser = GuiCheckBox(327, 50, 99, 20, "Randomizer", false, false, gui.windows.main)
+		gui.checkBoxes.enableRandomiser = GuiCheckBox(327, 50, 99, 20, "Randomiser", false, false, gui.windows.main)
 		gui.checkBoxes.enableRandomiser:setFont("default-bold-small")
-		gui.checkBoxes.enableRandomiser:setSelected(setting["randomizer"])
+		gui.checkBoxes.enableRandomiser:setSelected(defaultSettings.global.enableRandomiser)
 		
 		gui.checkBoxes.enableSilent = GuiCheckBox(327, 74, 99, 20, "SilentFlag", false, false, gui.windows.main)
 		gui.checkBoxes.enableSilent:setFont("default-bold-small")
-		gui.checkBoxes.enableSilent:setSelected(setting["silent"])
+		gui.checkBoxes.enableSilent:setSelected(defaultSettings.global.enableSilent)
 		
 		gui.labels.separator = GuiLabel(10, 99, 458, 16, ("_"):rep(78), false, gui.windows.main)
 	end
@@ -166,7 +171,7 @@ local function buildGui()
 		gui.labels.currentSirenColorAll:setColor( sirenSettings[s]["r"], sirenSettings[s]["g"], sirenSettings[s]["b"], sirenSettings[s]["a"])
 		
 		
-		triggerServerEvent("onSireneditorSirenApply", localPlayer, setting["sirenCount"], setting["sirenType"], setting["360flag"], setting["checklosflag"], setting["randomizer"], setting["silent"], sirenSettings)
+		triggerServerEvent("onSireneditorSirenApply", localPlayer, gui.editBoxes.sirenCount:getNumber(), gui.editBoxes.sirenType:getNumber(), gui.checkBoxes.enable360:getSelected(), gui.checkBoxes.enableLOSCheck:getSelected(), gui.checkBoxes.enableRandomiser:getSelected(), gui.checkBoxes.enableSilent:getSelected(), sirenSettings)
 	
 	end
 
@@ -221,7 +226,7 @@ local function buildGui()
 			outputChatBox("Falsche Eingabe! Es duerfen maximal 8 Sirenen sein, und minimal 1.", 255, 0, 0)
 			return
 		end
-		setting["sirenCount"] = anzahl
+		-- gui.editBoxes.sirenCount:getNumber() = anzahl
 		for i = 1, anzahl, 1 do
 			if not(sirenSettings[i]) then
 				sirenSettings[i] = {}
@@ -243,13 +248,13 @@ local function buildGui()
 			outputChatBox("Falsche Eingabe! Minimal 1 und Maximal 6.", 255, 0, 0)
 			return
 		end
-		setting["sirenentyp"] = anzahl
+		-- setting["sirenentyp"] = anzahl
 	end)
 
 	-- CLICK EVENTS --
 	-- APPLY --
 	addEventHandler("onClientGUIClick", gui.buttons.apply, function()
-		triggerServerEvent("onSireneditorSirenApply", localPlayer, setting["sirenCount"], setting["sirenType"], setting["360flag"], setting["checklosflag"], setting["randomizer"], setting["silent"], sirenSettings)
+		triggerServerEvent("onSireneditorSirenApply", localPlayer, gui.editBoxes.sirenCount:getNumber(), gui.editBoxes.sirenType:getNumber(), gui.checkBoxes.enable360:getSelected(), gui.checkBoxes.enableLOSCheck:getSelected(), gui.checkBoxes.enableRandomiser:getSelected(), gui.checkBoxes.enableSilent:getSelected(), sirenSettings)
 	end, false)
 
 	-- VIEW CODE --
@@ -263,29 +268,15 @@ local function buildGui()
 			local text = ""
 			text = text .. "removeVehicleSirens(veh)\n"
 			
-			text = text .. "addVehicleSirens(veh, " .. setting["sirenCount"] .. ", " .. setting["sirenType"] .. ", " .. tostring(setting["360flag"]) .. ", " .. tostring(setting["checklosflag"]) .. ", " .. tostring(setting["randomizer"]) .. ", " .. tostring(setting["silent"]) .. ")\n"
+			text = text .. "addVehicleSirens(veh, " .. gui.editBoxes.sirenCount:getNumber() .. ", " .. gui.editBoxes.sirenType:getNumber() .. ", " .. tostring(gui.checkBoxes.enable360:getSelected()) .. ", " .. tostring(gui.checkBoxes.enableLOSCheck:getSelected()) .. ", " .. tostring(gui.checkBoxes.enableRandomiser:getSelected()) .. ", " .. tostring(gui.checkBoxes.enableSilent:getSelected()) .. ")\n"
 			
-			for i = 1, setting["sirenCount"], 1 do
+			for i = 1, gui.editBoxes.sirenCount:getNumber(), 1 do
 				if(sirenSettings[i]) then
 					text = text .. "setVehicleSirens(veh, " .. i .. ", " .. sirenSettings[i]["x"] .. ", " .. sirenSettings[i]["y"] .. ", " .. sirenSettings[i]["z"] .. ", " .. sirenSettings[i]["r"] .. ", " .. sirenSettings[i]["g"] .. ", " .. sirenSettings[i]["b"] .. ", " .. sirenSettings[i]["a"] .. ", " .. sirenSettings[i]["am"] .. ")\n"
 				end
 			end
 			gui.memos.output:setText(text)
 		end
-	end, false)
-
-	-- CHECKBOXES --
-	addEventHandler("onClientGUIClick", gui.checkBoxes.enable360, function()
-		setting["360flag"] = source:getSelected()
-	end, false)
-	addEventHandler("onClientGUIClick", gui.checkBoxes.enableLOSCheck, function()
-		setting["checklosflag"] = source:getSelected()
-	end, false)
-	addEventHandler("onClientGUIClick", gui.checkBoxes.enableRandomiser, function()
-		setting["randomizer"] = source:getSelected()
-	end, false)
-	addEventHandler("onClientGUIClick", gui.checkBoxes.enableSilent, function()
-		setting["silent"] = source:getSelected()
 	end, false)
 
 	-- BACK 
@@ -297,7 +288,7 @@ local function buildGui()
 	end, false)
 	addEventHandler("onClientGUIClick", gui.buttons.nextSirenPoint, function()
 		if(currentSirenPoint > 10) then return end
-		if(currentSirenPoint > setting["sirenCount"]-1) then return end
+		if(currentSirenPoint > gui.editBoxes.sirenCount:getNumber()-1) then return end
 		currentSirenPoint = currentSirenPoint+1
 		gui.labels.currentSirenPoint:setText(currentSirenPoint)
 		applySettingsToRightSirenPoint(currentSirenPoint)
