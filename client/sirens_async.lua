@@ -3,10 +3,9 @@ function addVehicleSirensAsync(vehicle, sirenCount, sirenType, enable360, enable
 
 		function async(doneVehicle)
 			if source == localPlayer and doneVehicle == vehicle then
+				removeEventHandler(Events.Client.AddedSirens, localPlayer, async)
 				done()
 			end
-
-			removeEventHandler(Events.Client.AddedSirens, localPlayer, async)
 		end
 
 		addEventHandler(Events.Client.AddedSirens, localPlayer, async)
@@ -30,10 +29,9 @@ function removeVehicleSirensAsync(vehicle, done)
 
 		function async(doneVehicle)
 			if source == localPlayer and doneVehicle == vehicle then
+				removeEventHandler(Events.Client.RemovedSirens, localPlayer, async)
 				done()
 			end
-
-			removeEventHandler(Events.Client.RemovedSirens, localPlayer, async)
 		end
 
 		addEventHandler(Events.Client.RemovedSirens, localPlayer, async)
