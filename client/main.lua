@@ -303,6 +303,50 @@ function handleScrolling()
 	end
 end
 
+function updateCurrentSirenPointPosition()
+	local selectedSirenConfigTab = getSelectedSirenConfigTab()
+
+	if selectedSirenConfigTab then
+		local currentSirenPoint = selectedSirenConfigTab:getNumber()
+		local currentPointConfig = sirenPointsConfig[currentSirenPoint]
+
+		currentPointConfig.posX = gui.editBoxes.currentSirenPosX:getNumber()
+		currentPointConfig.posY = gui.editBoxes.currentSirenPosY:getNumber()
+		currentPointConfig.posZ = gui.editBoxes.currentSirenPosZ:getNumber()
+
+		localPlayer.vehicle:setSirens(
+			currentSirenPoint,
+			currentPointConfig.posX,
+			currentPointConfig.posY,
+			currentPointConfig.posZ,
+			currentPointConfig.colorR,
+			currentPointConfig.colorG,
+			currentPointConfig.colorB,
+			currentPointConfig.alpha,
+			currentPointConfig.minAlpha
+		)
+
+		synchronizationNeeded[localPlayer.vehicle] = true
+	end
+end
+
+function inputCoordsAreValid()
+	return gui.editBoxes.currentSirenPosX:getNumber() ~= nil
+		and gui.editBoxes.currentSirenPosY:getNumber() ~= nil
+		and gui.editBoxes.currentSirenPosZ:getNumber() ~= nil
+end
+
+function handleEditAccepted()
+	if source == gui.editBoxes.currentSirenPosX
+		or source == gui.editBoxes.currentSirenPosY
+		or source == gui.editBoxes.currentSirenPosZ
+	then
+		if inputCoordsAreValid() then
+			updateCurrentSirenPointPosition()
+		end
+	end
+end
+
 function initializeGui()
 	buildGui()
 
@@ -310,6 +354,7 @@ function initializeGui()
 	addEventHandler("onClientGUIComboBoxAccepted", gui.windows.main, handleGuiComboBoxChange)
 	addEventHandler("onClientGUITabSwitched", gui.tabPanels.main, handleTabChange)
 	addEventHandler("onClientGUIScroll", gui.tabPanels.main, handleScrolling)
+	addEventHandler("onClientGUIAccepted", gui.tabPanels.main, handleEditAccepted)
 end
 
 function toggleMainWindow()
