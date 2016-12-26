@@ -1,8 +1,48 @@
--- local currentSirenPoint = 1
+local sirenPointsConfig = {} --table.copy(defaultSettings.sirens)
+local syncInterval = 1000
+local synchronizationNeeded = {}
 
-local sirensConfig = {}
+function main()
+	addCommandHandler("sireneditor", toggleMainWindow)
+	setTimer(syncServerSirensWithLocal, syncInterval, 0)
+end
 
-sirensConfig[1] = table.copy(defaultSettings.sirens[1])
+function normalizeTableKeys(table, recursive)
+	-- For consistent naming
+	local map = {
+		SirenCount 		= "sirenCount",
+		sirenType 		= "sirenType",
+		x 				= "posX",
+		y 				= "posY",
+		z 				= "posZ",
+		Red 			= "colorR",
+		Green 			= "colorG",
+		Blue 			= "colorB",
+		Alpha 			= "alpha",
+		Min_Alpha 		= "minAlpha",
+		["360"]			= "enable360",
+		DoLOSCheck 		= "enableLOSCheck",
+		UseRandomiser 	= "enableRandomiser",
+		Silent 			= "enableSilent",
+		Flags 			= "flags",
+	}
+	local newTable = {}
+	local recursive = recursive or true
+
+	for key, value in pairs(table) do
+		if type(value) == "table" and recursive then
+			newTable[map[key] or key] = normalizeTableKeys(value, recursive)
+		else
+			newTable[map[key] or key] = value
+		end
+	end
+
+	return newTable
+end
+
+function getPlayersCount()
+	return #Element.getAllByType("player")
+end
 
 function refreshSirenConfigTabsState()
 	for i = 1, MAX_SIREN_COUNT do
@@ -16,28 +56,140 @@ function refreshSirenConfigTabsState()
 	end
 end
 
-function updateCurrentVehicleSirens()
-	local sirenCount = gui.comboBoxes.sirenCount:getNumber()
-
+function updateCurrentVehicleSirens(sirenPoints, sirenCount, sirenType, enable360, enableLOSCheck, enableRandomiser, enableSilent)
 	if sirenCount == 0 then
 		localPlayer.vehicle:removeSirensAsync(
-			function ()
+			function (result)
+				if not result then
+					outputChatBox("Unexpected error: unable to remove sirens, check debug log", 255, 0, 0)
+				end
+				
 				refreshSirenConfigTabsState()
 			end
 		)
 	else
 		localPlayer.vehicle:addSirensAsync(
-			sirenCount, 
-			gui.comboBoxes.sirenType:getNumber(), 
-			gui.checkBoxes.enable360:getSelected(), 
-			gui.checkBoxes.enableLOSCheck:getSelected(), 
-			gui.checkBoxes.enableRandomiser:getSelected(), 
-			gui.checkBoxes.enableSilent:getSelected(),
-			function ()
-				for index, t in pairs(sirensConfig) do
-					setVehicleSirens(localPlayer.vehicle, index, t.posX, t.posY, t.posZ, t.colorR, t.colorG, t.colorB, t.alpha, t.minAlpha)
-				end	
+			sirenCount,
+			sirenType,
+			enable360,
+			enableLOSCheck,
+			enableRandomiser,
+			enableSilent,
+
+			function (result)
+				if result then
+					for index, siren in pairs(sirenPoints) do
+						localPlayer.vehicle:setSirens(
+							index,
+							siren.posX,
+							siren.posY,
+							siren.posZ,
+							siren.colorR,
+							siren.colorG,
+							siren.colorB,
+							siren.alpha,
+							siren.minAlpha
+						)
+					end	
+					
+					localPlayer.vehicle:setSirensOn(true)
+				else
+					outputChatBox("Unexpected error: unable to add sirens, check debug log", 255, 0, 0)
+				end
+
 				refreshSirenConfigTabsState()
+			end
+		)
+	end
+end
+
+function getSirenParamsFromGui()
+	return { 
+		gui.comboBoxes.sirenCount:getNumber(),
+		gui.comboBoxes.sirenType:getNumber(), 
+		gui.checkBoxes.enable360:getSelected(), 
+		gui.checkBoxes.enableLOSCheck:getSelected(), 
+		gui.checkBoxes.enableRandomiser:getSelected(), 
+		gui.checkBoxes.enableSilent:getSelected() 
+	}
+end
+
+function synchronizeGuiWithCurrentVehicleSirens()
+	function synchronizeParams()
+		local sirenParams = normalizeTableKeys(localPlayer.vehicle:getSirenParams())
+
+		-- Combobox should have values 0-8, so items order will match 
+		-- sirenCount perfectly. No further logic needed.
+		gui.comboBoxes.sirenCount:setSelected(sirenParams.sirenCount)
+
+		-- But correct sirenType index must be manually searched in table
+		for index, sirenType in ipairs(SIREN_TYPES) do
+			if SIREN_TYPES[index] == sirenParams.sirenType then
+				gui.comboBoxes.sirenType:setSelected(index)
+			end
+		end
+
+		for flagName, value in pairs(sirenParams.flags) do
+			local checkbox = gui.checkBoxes[flagName]
+
+			if isElement(checkbox) then
+				checkbox:setSelected(value)
+			else
+				outputDebugString("Unknown sirenParams flag: " .. flagName, 2)
+			end
+		end
+
+		if sirenParams.sirenCount == 0 then
+			gui.tabPanels.main:setSelectedTab(gui.tabs.credits)
+		end
+	end
+
+	function synchronizePoints()
+		local sirens = normalizeTableKeys(localPlayer.vehicle:getSirens())
+
+		for i = 1, MAX_SIREN_COUNT do
+			if sirens[i] then
+				sirenPointsConfig[i] = sirens[i]
+			else
+				sirenPointsConfig[i] = table.copy(defaultSettings.sirens[i] or defaultSettings.sirens[1])
+			end
+
+			gui.labels.sirenColorMarker[i]:setColor(
+				sirenPointsConfig[i].colorR,
+				sirenPointsConfig[i].colorG,
+				sirenPointsConfig[i].colorB
+			)
+		end
+		
+		local selectedSirenConfigTab = getSelectedSirenConfigTab()
+
+		if selectedSirenConfigTab then
+			rebuildSirenPointControls(selectedSirenConfigTab, sirenPointsConfig[selectedSirenConfigTab:getNumber()])
+		end
+	end
+
+	synchronizeParams()
+	synchronizePoints()
+end
+
+function areVehicleSirensSynced(vehicle)
+	return synchronizationNeeded[localPlayer.vehicle] ~= true
+end
+
+function syncServerSirensWithLocal()
+	if isElement(localPlayer.vehicle) and not areVehicleSirensSynced(localPlayer.vehicle) then
+		-- gui.labels.syncing:setVisible(true)
+
+		localPlayer.vehicle:setSirensAsync(
+			sirenPointsConfig,
+			function (result) 
+				if result  then
+					-- outputDebugString("Synchronization finished succesfully")
+					synchronizationNeeded[localPlayer.vehicle] = nil
+					-- gui.labels.syncing:setVisible(false)
+				else
+					outputDebugString("There was some problem with syncing vehicle sirens, will retry in a moment", 2)
+				end
 			end
 		)
 	end
@@ -49,7 +201,7 @@ function handleGuiClicks()
 		or source == gui.checkBoxes.enableSilent
 		or source == gui.checkBoxes.enableRandomiser
 	then
-		updateCurrentVehicleSirens()
+		updateCurrentVehicleSirens(sirenPointsConfig, unpack(getSirenParamsFromGui()))
 	end
 end
 
@@ -57,27 +209,107 @@ function handleGuiComboBoxChange(source)
 	if source == gui.comboBoxes.sirenCount
 		or source == gui.comboBoxes.sirenType
 	then
-		updateCurrentVehicleSirens()
+		local selectedSirenConfigTab = getSelectedSirenConfigTab()
+
+		if selectedSirenConfigTab then
+			if gui.comboBoxes.sirenCount:getNumber() == 0 then
+				gui.tabPanels.main:setSelectedTab(gui.tabs.credits)
+			elseif selectedSirenConfigTab:getNumber() > gui.comboBoxes.sirenCount:getNumber() then
+				gui.tabPanels.main:setSelectedTab(gui.tabs.sirenConfig[gui.comboBoxes.sirenCount:getNumber()])
+			end
+		end
+
+		updateCurrentVehicleSirens(sirenPointsConfig, unpack(getSirenParamsFromGui()))
 	end
 end
 
-function handleTabChange(tab)
+function getSelectedSirenConfigTab()
 	for _, sirenConfigTab in ipairs(gui.tabs.sirenConfig) do
-		if tab == sirenConfigTab then
-			return rebuildSirenPointControls(tab)
+		if sirenConfigTab == gui.tabPanels.main:getSelectedTab() then
+			return sirenConfigTab
 		end
 	end
 
-	destroyExistingSirenPointControls()
+	return nil
+end
+
+function handleTabChange(tab)
+	local selectedSirenConfigTab = getSelectedSirenConfigTab()
+
+	if selectedSirenConfigTab == tab then
+		rebuildSirenPointControls(tab, sirenPointsConfig[tab:getNumber()])
+	else
+		-- It is one of additional tabs (About, Lua, XML...)
+		destroyExistingSirenPointControls()
+	end
+end
+
+function calculateColorValue(element)
+	return math.round(element:getScrollPosition() / 100 * MAX_COLOR_VALUE)
+end
+
+function updateCurrentSirenPointColor()
+	local selectedSirenConfigTab = getSelectedSirenConfigTab()
+
+	if selectedSirenConfigTab then
+		local currentSirenPoint = selectedSirenConfigTab:getNumber()
+		local currentPointConfig = sirenPointsConfig[currentSirenPoint]
+
+		if source == gui.scrollBars.currentSirenColorRed then
+			currentPointConfig.colorR = calculateColorValue(gui.scrollBars.currentSirenColorRed)
+		elseif source == gui.scrollBars.currentSirenColorGreen then
+			currentPointConfig.colorG = calculateColorValue(gui.scrollBars.currentSirenColorGreen)
+		elseif source == gui.scrollBars.currentSirenColorBlue then
+			currentPointConfig.colorB = calculateColorValue(gui.scrollBars.currentSirenColorBlue)
+		elseif source == gui.scrollBars.currentSirenColorAlpha then
+			currentPointConfig.alpha = calculateColorValue(gui.scrollBars.currentSirenColorAlpha)
+		elseif source == gui.scrollBars.currentSirenColorMinAlpha then
+			currentPointConfig.minAlpha = calculateColorValue(gui.scrollBars.currentSirenColorMinAlpha)
+		end
+
+		gui.labels.currentSirenColorAll:setText(("R: %s\nG: %s\nB: %s"):format(currentPointConfig.colorR, currentPointConfig.colorG, currentPointConfig.colorB))
+		gui.labels.currentSirenAlpha:setText(("Alpha: %s\nMin.: %s"):format(currentPointConfig.alpha, currentPointConfig.minAlpha))
+
+		gui.labels.sirenColorMarker[currentSirenPoint]:setColor(
+			currentPointConfig.colorR,
+			currentPointConfig.colorG,
+			currentPointConfig.colorB
+		)
+
+		localPlayer.vehicle:setSirens(
+			currentSirenPoint,
+			currentPointConfig.posX,
+			currentPointConfig.posY,
+			currentPointConfig.posZ,
+			currentPointConfig.colorR,
+			currentPointConfig.colorG,
+			currentPointConfig.colorB,
+			currentPointConfig.alpha,
+			currentPointConfig.minAlpha
+		)
+
+		synchronizationNeeded[localPlayer.vehicle] = true
+	end
+end
+
+function handleScrolling()
+	if source == gui.scrollBars.currentSirenColorRed
+		or source == gui.scrollBars.currentSirenColorGreen
+		or source == gui.scrollBars.currentSirenColorBlue
+		or source == gui.scrollBars.currentSirenColorAlpha
+		or source == gui.scrollBars.currentSirenColorMinAlpha
+	then
+		updateCurrentSirenPointColor()
+	end
 end
 
 function initializeGui()
 	buildGui()
-	buildSirenPointControls(gui.tabs.sirenConfig[1])
 
 	addEventHandler("onClientGUIClick", gui.windows.main, handleGuiClicks, true)
 	addEventHandler("onClientGUIComboBoxAccepted", gui.windows.main, handleGuiComboBoxChange)
-	addEventHandler("onClientGUITabSwitched", gui.tabPanels.main, handleTabChange)	
+	addEventHandler("onClientGUITabSwitched", gui.tabPanels.main, handleTabChange)
+	addEventHandler("onClientGUIScroll", gui.tabPanels.main, handleScrolling)
 end
 
 function toggleMainWindow()
@@ -85,30 +317,24 @@ function toggleMainWindow()
 		initializeGui()
 	end
 
-	refreshSirenConfigTabsState()
-
 	if gui.windows.main.visible then
 		gui.windows.main:setVisible(false)
 		showCursor(false)
 	else
 		if not localPlayer:isInVehicle() then
-			return outputChatBox("You must sit in a vehicle!", 255, 0, 0)
+			return outputChatBox("You are not sitting in a vehicle", 255, 0, 0)
 		end
+	
+		refreshSirenConfigTabsState()
+		synchronizeGuiWithCurrentVehicleSirens()
 
 		gui.windows.main:setVisible(true)
 		showCursor(true)
 
 		GuiElement.setInputMode("no_binds_when_editing")
+
+		localPlayer.vehicle:setSirensOn(true)
 	end
 end
 
-addCommandHandler("sireneditor", toggleMainWindow)
-
-
--- function math.round(number, decimals, method)
---     decimals = decimals or 0
---     local factor = 10 ^ decimals
---     if (method == "ceil" or method == "floor") then return math[method](number * factor) / factor
---     else return tonumber(("%." .. decimals .. "f"):format(number)) end
--- end
-
+main()

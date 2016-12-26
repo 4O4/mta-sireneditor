@@ -69,6 +69,10 @@ local function buildMainGui()
 		gui.checkBoxes.enableLOSCheck:setSelected(defaultSettings.global.enableLOSCheck)
 		
 		gui.labels.separator = GuiLabel(10, 81, 458, 16, ("_"):rep(78), false, gui.windows.main)
+
+		gui.labels.syncing = GuiLabel(295, 96, 160, 16, "Syncing with other players...", false, gui.windows.main)
+		gui.labels.syncing:setFont("default-bold-small")
+		gui.labels.syncing:setVisible(false)
 	end
 
 	function buildTabs()
@@ -80,17 +84,7 @@ local function buildMainGui()
 		local currentColorMarkerPosX = 15
 		for i = 1, MAX_SIREN_COUNT do
 			gui.tabs.sirenConfig[i] = GuiTab(i .. "  ", gui.tabPanels.main)
-
-			-- gui.tabs.sirenConfig[i].id = "tab"
-			-- outputDebugString(getElementID(gui.tabs.sirenConfig[i]))
-
 			gui.labels.sirenColorMarker[i] = GuiLabel(currentColorMarkerPosX, 98, 20, 13, "▄▄▄", false, gui.windows.main)
-			-- gui.labels.sirenColorMarker[i]:setProperty("AlwaysOnTop", "True")
-			gui.labels.sirenColorMarker[i]:setColor(
-				defaultSettings.sirens[i].colorR,
-				defaultSettings.sirens[i].colorG,
-				defaultSettings.sirens[i].colorB
-			)
 
 			currentColorMarkerPosX = currentColorMarkerPosX + 35
 		end
@@ -101,8 +95,8 @@ local function buildMainGui()
 		-- gui.tabs.sirenPosition = GuiTab("Position", gui.tabPanels.main)	
 		-- gui.tabs.sirenColor = GuiTab("Color", gui.tabPanels.main)
 
-		gui.tabs.credits = GuiTab("XML", gui.tabPanels.main)
-		gui.tabs.credits = GuiTab("Lua", gui.tabPanels.main)
+		gui.tabs.xmlOutput = GuiTab("XML", gui.tabPanels.main)
+		gui.tabs.luaOutput = GuiTab("Lua", gui.tabPanels.main)
 		gui.tabs.credits = GuiTab("About", gui.tabPanels.main)
 		
 		gui.labels.creditsInfo = GuiLabel(6, 4, 447, 95, "", false, gui.tabs.credits)
@@ -151,7 +145,7 @@ function destroyExistingSirenPointControls()
 	end
 end
 
-function buildSirenPointControls(parent)
+function buildSirenPointControls(parent, sirenPointConfig)
 	-- gui.tabs.sirenConfig[1]
 	gui.labels.currentSirenPosX = GuiLabel(9, 21, 10, 24, "X:", false, parent)
 	gui.labels.currentSirenPosX:setFont("default-bold-small")
@@ -160,35 +154,38 @@ function buildSirenPointControls(parent)
 	gui.labels.currentSirenPosZ = GuiLabel(9, 70, 10, 24, "Z:", false, parent)
 	gui.labels.currentSirenPosZ:setFont("default-bold-small")
 	
-	gui.editBoxes.currentSirenPosX = GuiEdit(24, 17, 80, 24, defaultSettings.sirens[1].posX, false, parent)
-	gui.editBoxes.currentSirenPosY = GuiEdit(24, 41, 80, 24, defaultSettings.sirens[1].posY, false, parent)
-	gui.editBoxes.currentSirenPosZ = GuiEdit(24, 65, 80, 24, defaultSettings.sirens[1].posZ, false, parent)
+	gui.editBoxes.currentSirenPosX = GuiEdit(24, 17, 80, 24, sirenPointConfig.posX, false, parent)
+	gui.editBoxes.currentSirenPosY = GuiEdit(24, 41, 80, 24, sirenPointConfig.posY, false, parent)
+	gui.editBoxes.currentSirenPosZ = GuiEdit(24, 65, 80, 24, sirenPointConfig.posZ, false, parent)
 	
 	gui.scrollBars.currentSirenColorRed = GuiScrollBar(113, 7, 168, 23, true, false, parent)
 	gui.scrollBars.currentSirenColorGreen = GuiScrollBar(113, 38, 168, 23, true, false, parent)
 	gui.scrollBars.currentSirenColorBlue = GuiScrollBar(113, 70, 168, 23, true, false, parent)
-	gui.scrollBars.currentSirenColorRed:setScrollPosition(defaultSettings.sirens[1].colorR / MAX_COLOR_VALUE * 100)
-	gui.scrollBars.currentSirenColorGreen:setScrollPosition(defaultSettings.sirens[1].colorG / MAX_COLOR_VALUE * 100)
-	gui.scrollBars.currentSirenColorBlue:setScrollPosition(defaultSettings.sirens[1].colorB / MAX_COLOR_VALUE * 100)
 	
-	gui.labels.currentSirenColorAll = GuiLabel(290, 18, 141, 67, ("R: %s\nG: %s\nB: %s"):format(defaultSettings.sirens[1].colorR, defaultSettings.sirens[1].colorG, defaultSettings.sirens[1].colorB), false, parent)
+	gui.labels.currentSirenColorAll = GuiLabel(290, 18, 141, 67, ("R: %s\nG: %s\nB: %s"):format(sirenPointConfig.colorR, sirenPointConfig.colorG, sirenPointConfig.colorB), false, parent)
 	gui.labels.currentSirenColorAll:setVerticalAlign("center")
 	gui.labels.currentSirenColorAll:setHorizontalAlign("left", false)
 	gui.labels.currentSirenColorAll:setFont("default-bold-small")
 	
 	gui.scrollBars.currentSirenColorAlpha = GuiScrollBar(332, 1, 22, 102, false, false, parent)
 	gui.scrollBars.currentSirenColorMinAlpha = GuiScrollBar(356, 1, 22, 102, false, false, parent)
-	gui.scrollBars.currentSirenColorAlpha:setScrollPosition(defaultSettings.sirens[1].alpha / MAX_COLOR_VALUE * 100)
-	gui.scrollBars.currentSirenColorMinAlpha:setScrollPosition(defaultSettings.sirens[1].minAlpha / MAX_COLOR_VALUE * 100)
 	
-	gui.labels.currentSirenAlpha = GuiLabel(372, 33, 85, 36, "Alpha: 0\nMin.: 0", false, parent)
+	gui.labels.currentSirenAlpha = GuiLabel(372, 33, 85, 36, ("Alpha: %s\nMin.: %s"):format(sirenPointConfig.alpha, sirenPointConfig.minAlpha), false, parent)
 	gui.labels.currentSirenAlpha:setHorizontalAlign("center", false)
 	gui.labels.currentSirenAlpha:setFont("default-bold-small")
+
+	-- Scroll setters must be called after labels are created
+	gui.scrollBars.currentSirenColorRed:setScrollPosition(sirenPointConfig.colorR / MAX_COLOR_VALUE * 100)
+	gui.scrollBars.currentSirenColorGreen:setScrollPosition(sirenPointConfig.colorG / MAX_COLOR_VALUE * 100)
+	gui.scrollBars.currentSirenColorBlue:setScrollPosition(sirenPointConfig.colorB / MAX_COLOR_VALUE * 100)
+
+	gui.scrollBars.currentSirenColorAlpha:setScrollPosition(sirenPointConfig.alpha / MAX_COLOR_VALUE * 100)
+	gui.scrollBars.currentSirenColorMinAlpha:setScrollPosition(sirenPointConfig.minAlpha / MAX_COLOR_VALUE * 100)
 end
 
-function rebuildSirenPointControls(parent)
+function rebuildSirenPointControls(parent, sirenPointConfig)
 	destroyExistingSirenPointControls()
-	buildSirenPointControls(parent)
+	buildSirenPointControls(parent, sirenPointConfig)
 end
 
 function buildGui()
