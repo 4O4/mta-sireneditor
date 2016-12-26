@@ -105,7 +105,17 @@ local function buildMainGui()
 		-- gui.tabs.sirenColor = GuiTab("Color", gui.tabPanels.main)
 
 		gui.tabs.xmlOutput = GuiTab("XML", gui.tabPanels.main)
+		gui.memos.xmlOutput = GuiMemo(5, 5, 446, 92, "", false, gui.tabs.xmlOutput)
+		gui.memos.xmlOutput:setReadOnly(true)
+		gui.buttons.copyXmlOutput = GuiButton(305, 10, 120, 20, "Copy to clipboard", false, gui.tabs.xmlOutput)
+		gui.buttons.copyXmlOutput:setProperty("AlwaysOnTop", "True")
+
 		gui.tabs.luaOutput = GuiTab("Lua", gui.tabPanels.main)
+		gui.memos.luaOutput = GuiMemo(5, 5, 446, 92, "", false, gui.tabs.luaOutput)
+		gui.memos.luaOutput:setReadOnly(true)
+		gui.buttons.copyLuaOutput = GuiButton(305, 10, 120, 20, "Copy to clipboard", false, gui.tabs.luaOutput)
+		gui.buttons.copyLuaOutput:setProperty("AlwaysOnTop", "True")
+
 		gui.tabs.credits = GuiTab("About", gui.tabPanels.main)
 		
 		gui.labels.creditsInfo = GuiLabel(6, 4, 447, 100, "", false, gui.tabs.credits)
