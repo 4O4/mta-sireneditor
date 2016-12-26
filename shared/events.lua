@@ -2,9 +2,11 @@ Events = {
 	Server = {
 		AddSirens = "onSireneditorSirensAdd",
 		RemoveSirens = "onSireneditorSirensRemove",
+		SetSirens = "onSirenEditorSirensSet",
 	},
 	Client = {
-		AddedSirens = "onSirenEditorSirensApplied",
-		RemovedSirens = "onSirenEditorSirensRemoved",
+		AddSirensFinished = "onSirenEditorSirensAddFinished",
+		RemoveSirensFinished = "onSirenEditorSirensRemoveFinished",
+		SetSirensFinished = "onSirenEditorSirensSetFinished",
 	}
 }
