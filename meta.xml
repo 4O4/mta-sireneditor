@@ -15,6 +15,8 @@
 	<script src="client/constants.lua" type="client" />
 	<script src="client/defaults.lua" type="client" />
 	<script src="client/gui.lua" type="client" />
+	<script src="client/code_templates.lua" type="client" />
+	<script src="client/code_generator.lua" type="client" />
 	<script src="client/main.lua" type="client" />
 
 	<script src="server/sirens_async.lua" type="server" />
