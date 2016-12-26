@@ -70,9 +70,14 @@ local function buildMainGui()
 		
 		gui.labels.separator = GuiLabel(10, 81, 458, 16, ("_"):rep(78), false, gui.windows.main)
 
-		gui.labels.syncing = GuiLabel(295, 96, 160, 16, "Syncing with other players...", false, gui.windows.main)
-		gui.labels.syncing:setFont("default-bold-small")
-		gui.labels.syncing:setVisible(false)
+		-- gui.labels.syncing = GuiLabel(295, 96, 160, 16, "Syncing with other players...", false, gui.windows.main)
+		-- gui.labels.syncing:setFont("default-bold-small")
+		-- gui.labels.syncing:setVisible(false)
+
+		gui.labels.positionHelp = GuiLabel(295, 96, 160, 16, "Press ENTER to set position", false, gui.windows.main)
+		gui.labels.positionHelp:setFont("default-bold-small")
+		gui.labels.positionHelp:setHorizontalAlign("right")
+		gui.labels.positionHelp:setVisible(false)
 	end
 
 	function buildTabs()
@@ -146,17 +151,19 @@ function destroyExistingSirenPointControls()
 end
 
 function buildSirenPointControls(parent, sirenPointConfig)
-	-- gui.tabs.sirenConfig[1]
-	gui.labels.currentSirenPosX = GuiLabel(9, 21, 10, 24, "X:", false, parent)
+	gui.labels.currentSirenPosX = GuiLabel(7, 13, 10, 24, "X:", false, parent)
 	gui.labels.currentSirenPosX:setFont("default-bold-small")
-	gui.labels.currentSirenPosY = GuiLabel(9, 45, 10, 24, "Y:", false, parent)
+	gui.labels.currentSirenPosY = GuiLabel(7, 44, 10, 24, "Y:", false, parent)
 	gui.labels.currentSirenPosY:setFont("default-bold-small")
-	gui.labels.currentSirenPosZ = GuiLabel(9, 70, 10, 24, "Z:", false, parent)
+	gui.labels.currentSirenPosZ = GuiLabel(7, 76, 10, 24, "Z:", false, parent)
 	gui.labels.currentSirenPosZ:setFont("default-bold-small")
 	
-	gui.editBoxes.currentSirenPosX = GuiEdit(24, 17, 80, 24, sirenPointConfig.posX, false, parent)
-	gui.editBoxes.currentSirenPosY = GuiEdit(24, 41, 80, 24, sirenPointConfig.posY, false, parent)
-	gui.editBoxes.currentSirenPosZ = GuiEdit(24, 65, 80, 24, sirenPointConfig.posZ, false, parent)
+	gui.editBoxes.currentSirenPosX = GuiEdit(24, 9, 80, 24, sirenPointConfig.posX, false, parent)
+	gui.editBoxes.currentSirenPosX:setMaxLength(9)
+	gui.editBoxes.currentSirenPosY = GuiEdit(24, 40, 80, 24, sirenPointConfig.posY, false, parent)
+	gui.editBoxes.currentSirenPosY:setMaxLength(9)
+	gui.editBoxes.currentSirenPosZ = GuiEdit(24, 71, 80, 24, sirenPointConfig.posZ, false, parent)
+	gui.editBoxes.currentSirenPosZ:setMaxLength(9)
 	
 	gui.scrollBars.currentSirenColorRed = GuiScrollBar(113, 7, 168, 23, true, false, parent)
 	gui.scrollBars.currentSirenColorGreen = GuiScrollBar(113, 38, 168, 23, true, false, parent)
