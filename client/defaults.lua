@@ -9,6 +9,7 @@ defaultSettings = {
 	},
 
 	-- Explicit indexing for better navigation in this long table
+	-- Default config for at least first siren must be provided!
 	sirens = { 
 		[1] = {
 			posX = -0.5,
@@ -18,7 +19,7 @@ defaultSettings = {
 			colorG = 0,
 			colorB = 0,
 			alpha = 255,
-			minAlpha = 0,
+			minAlpha = 190,
 		},
 		[2] = {
 			posX = 0.5,
@@ -28,7 +29,7 @@ defaultSettings = {
 			colorG = 255,
 			colorB = 0,
 			alpha = 255,
-			minAlpha = 0,
+			minAlpha = 190,
 		},
 		[3] = {
 			posX = -0.5,
@@ -38,7 +39,7 @@ defaultSettings = {
 			colorG = 255,
 			colorB = 255,
 			alpha = 255,
-			minAlpha = 0,
+			minAlpha = 190,
 		},
 		[4] = {
 			posX = 0.5,
@@ -48,7 +49,7 @@ defaultSettings = {
 			colorG = 255,
 			colorB = 0,
 			alpha = 255,
-			minAlpha = 0,
+			minAlpha = 190,
 		},
 		[5] = {
 			posX = -0.5,
@@ -58,7 +59,7 @@ defaultSettings = {
 			colorG = 255,
 			colorB = 255,
 			alpha = 255,
-			minAlpha = 0,
+			minAlpha = 190,
 		},
 		[6] = {
 			posX = 0.5,
@@ -68,7 +69,7 @@ defaultSettings = {
 			colorG = 0,
 			colorB = 255,
 			alpha = 255,
-			minAlpha = 0,
+			minAlpha = 190,
 		},
 		[7] = {
 			posX = -0.5,
@@ -78,7 +79,7 @@ defaultSettings = {
 			colorG = 0,
 			colorB = 255,
 			alpha = 255,
-			minAlpha = 0,
+			minAlpha = 190,
 		},
 		[8] = {
 			posX = 0.5,
@@ -88,7 +89,7 @@ defaultSettings = {
 			colorG = 128,
 			colorB = 128,
 			alpha = 255,
-			minAlpha = 0,
+			minAlpha = 190,
 		}
 	}
 }
