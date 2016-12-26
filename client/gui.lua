@@ -19,7 +19,11 @@ local function buildOutputGui()
 
 	gui.memos.output = GuiMemo(9, 23, 291, 145, "", false, gui.windows.output)
 	gui.memos.output:setReadOnly(true)
-end    
+end
+
+function updateCreditsInfo(newVersion)
+	gui.labels.creditsInfo:setText(("License: GPLv2 %99s\nAuthor: Pawelo %90s\n\nYou can report issues, create pull requests or check for updates on GitHub:\n     https://github.com/%s\n\nOriginal author (v1.0.0): Noneatme\n\n"):format("Current version: " .. VERSION, newVersion and ("Newer version is available! (%s) "):format(newVersion) or "", GITHUB_REPO))
+end
 
 local function buildMainGui()
 	function buildGlobalSettingsGui()
@@ -27,7 +31,7 @@ local function buildMainGui()
 	    local mainWindowPosX = (screenWidth / 2) - (mainWindowWidth / 2)
 	    local mainWindowPosY = 0 -- (screenHeight / 2) - (mainWindowHeight / 2)
 
-		gui.windows.main = GuiWindow(mainWindowPosX, mainWindowPosY, mainWindowWidth, mainWindowHeight, "Siren Editor v" .. VERSION, false)
+		gui.windows.main = GuiWindow(mainWindowPosX, mainWindowPosY, mainWindowWidth, mainWindowHeight, "Siren Editor " .. VERSION, false)
 		gui.windows.main:setVisible(false)
 
 		gui.labels.sirenCount = GuiLabel(12, 31, 100, 15, "Number of Sirens:", false, gui.windows.main)
@@ -104,9 +108,9 @@ local function buildMainGui()
 		gui.tabs.luaOutput = GuiTab("Lua", gui.tabPanels.main)
 		gui.tabs.credits = GuiTab("About", gui.tabPanels.main)
 		
-		gui.labels.creditsInfo = GuiLabel(6, 4, 447, 95, "", false, gui.tabs.credits)
+		gui.labels.creditsInfo = GuiLabel(6, 4, 447, 100, "", false, gui.tabs.credits)
 		gui.labels.creditsInfo:setFont("default-bold-small")
-		gui.labels.creditsInfo:setText("License: GPLv2\nOriginal author: Noneatme\nUpdated and maintained by: Pawelo\n\nYou can report issues or create pull requests on GitHub:\n\nhttps://github.com/4O4/mta-sireneditor\n\n")
+		updateCreditsInfo()
 
 		-- gui.labels.currentSirenPoint = GuiLabel(11, 118, 110, 20, "Current siren point:", false, gui.windows.main)
 		-- gui.labels.currentSirenPoint:setFont("default-bold-small")

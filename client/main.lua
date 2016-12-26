@@ -387,9 +387,20 @@ function initializeGuiHandlers()
 	addEventHandler("onClientGUIChanged", gui.tabPanels.main, handleEditChanged)
 end
 
+function checkForUpdates()
+	getLatestVersionNumberAsync(
+		function (err, newVersion)
+			if err == 0 and newVersion > VERSION then
+				updateCreditsInfo(newVersion)
+			end
+		end
+	)
+end
+
 function toggleMainWindow()
 	if not isElement(gui.windows.main) then
 		initializeGui()
+		checkForUpdates()
 	end
 
 	if gui.windows.main.visible then
