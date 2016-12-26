@@ -159,6 +159,10 @@ function synchronizeGuiWithCurrentVehicleSirens()
 				sirenPointsConfig[i].colorG,
 				sirenPointsConfig[i].colorB
 			)
+
+			sirenPointsConfig[i].posX = ("%.6f"):format(sirenPointsConfig[i].posX)
+			sirenPointsConfig[i].posY = ("%.6f"):format(sirenPointsConfig[i].posY)
+			sirenPointsConfig[i].posZ = ("%.6f"):format(sirenPointsConfig[i].posZ)
 		end
 		
 		local selectedSirenConfigTab = getSelectedSirenConfigTab()
@@ -343,18 +347,44 @@ function handleEditAccepted()
 	then
 		if inputCoordsAreValid() then
 			updateCurrentSirenPointPosition()
+			gui.labels.positionHelp:setVisible(false)
+			source:setProperty('NormalTextColour', 'FF007700')
 		end
+	end
+end
+
+function highlightInvalidNumber(element)
+	if isElement(element) then
+		if element:getNumber() == nil then
+			element:setProperty('NormalTextColour', 'FFAA0000')
+		else
+			element:setProperty('NormalTextColour', 'FF000000')
+		end
+	end
+end
+
+function handleEditChanged()
+	if source == gui.editBoxes.currentSirenPosX
+		or source == gui.editBoxes.currentSirenPosY
+		or source == gui.editBoxes.currentSirenPosZ
+	then
+		gui.labels.positionHelp:setVisible(true)
+		highlightInvalidNumber(source)
 	end
 end
 
 function initializeGui()
 	buildGui()
+	initializeGuiHandlers()
+end
 
+function initializeGuiHandlers()
 	addEventHandler("onClientGUIClick", gui.windows.main, handleGuiClicks, true)
 	addEventHandler("onClientGUIComboBoxAccepted", gui.windows.main, handleGuiComboBoxChange)
 	addEventHandler("onClientGUITabSwitched", gui.tabPanels.main, handleTabChange)
 	addEventHandler("onClientGUIScroll", gui.tabPanels.main, handleScrolling)
 	addEventHandler("onClientGUIAccepted", gui.tabPanels.main, handleEditAccepted)
+	addEventHandler("onClientGUIChanged", gui.tabPanels.main, handleEditChanged)
 end
 
 function toggleMainWindow()
