@@ -103,15 +103,28 @@ function updateCurrentVehicleSirens(sirenPoints, sirenCount, sirenType, enable36
 	end
 end
 
-function getSirenParamsFromGui()
-	return { 
-		gui.comboBoxes.sirenCount:getNumber(),
-		gui.comboBoxes.sirenType:getNumber(), 
-		gui.checkBoxes.enable360:getSelected(), 
-		gui.checkBoxes.enableLOSCheck:getSelected(), 
-		gui.checkBoxes.enableRandomiser:getSelected(), 
-		gui.checkBoxes.enableSilent:getSelected() 
-	}
+function getSirenParamsFromGui(named)
+	local named = named or false
+
+	if not named then
+		return { 
+			gui.comboBoxes.sirenCount:getNumber(),
+			gui.comboBoxes.sirenType:getNumber(), 
+			gui.checkBoxes.enable360:getSelected(), 
+			gui.checkBoxes.enableLOSCheck:getSelected(), 
+			gui.checkBoxes.enableRandomiser:getSelected(), 
+			gui.checkBoxes.enableSilent:getSelected() 
+		}
+	else
+		return { 
+			sirenCount = gui.comboBoxes.sirenCount:getNumber(),
+			sirenType = gui.comboBoxes.sirenType:getNumber(), 
+			enable360 = gui.checkBoxes.enable360:getSelected(), 
+			enableLOSCheck = gui.checkBoxes.enableLOSCheck:getSelected(), 
+			enableRandomiser = gui.checkBoxes.enableRandomiser:getSelected(), 
+			enableSilent = gui.checkBoxes.enableSilent:getSelected() 
+		}
+	end
 end
 
 function synchronizeGuiWithCurrentVehicleSirens()
@@ -140,7 +153,7 @@ function synchronizeGuiWithCurrentVehicleSirens()
 		end
 
 		if sirenParams.sirenCount == 0 then
-			gui.tabPanels.main:setSelectedTab(gui.tabs.credits)
+			setSingleTabMode()
 		end
 	end
 
@@ -199,6 +212,16 @@ function syncServerSirensWithLocal()
 	end
 end
 
+function refreshOutputTab(tab)
+	local tab = tab or gui.tabPanels.main:getSelectedTab()
+
+	if tab == gui.tabs.xmlOutput then
+		insertXMLCode()
+	elseif tab == gui.tabs.luaOutput then
+		insertLuaCode()
+	end
+end
+
 function handleGuiClicks()
 	if source == gui.checkBoxes.enable360
 		or source == gui.checkBoxes.enableLOSCheck
@@ -206,6 +229,29 @@ function handleGuiClicks()
 		or source == gui.checkBoxes.enableRandomiser
 	then
 		updateCurrentVehicleSirens(sirenPointsConfig, unpack(getSirenParamsFromGui()))
+		refreshOutputTab()
+	elseif source == gui.buttons.copyXmlOutput then
+		setClipboard(gui.memos.xmlOutput:getText())
+	elseif source == gui.buttons.copyLuaOutput then
+		setClipboard(gui.memos.luaOutput:getText())
+	end
+end
+
+function setSingleTabMode(single)
+	local single = single ~= false
+
+	if single then
+		gui.tabPanels.main:setSelectedTab(gui.tabs.credits)
+		gui.tabs.xmlOutput:setEnabled(false)
+		gui.tabs.luaOutput:setEnabled(false)
+	else
+		if gui.tabs.xmlOutput:getEnabled() == false then
+			gui.tabs.xmlOutput:setEnabled(true)
+		end
+
+		if gui.tabs.luaOutput:getEnabled() == false then
+			gui.tabs.luaOutput:setEnabled(true)
+		end
 	end
 end
 
@@ -213,17 +259,22 @@ function handleGuiComboBoxChange(source)
 	if source == gui.comboBoxes.sirenCount
 		or source == gui.comboBoxes.sirenType
 	then
-		local selectedSirenConfigTab = getSelectedSirenConfigTab()
+		if gui.comboBoxes.sirenCount:getNumber() == 0 then
+			setSingleTabMode()
+		else
+			setSingleTabMode(false)
 
-		if selectedSirenConfigTab then
-			if gui.comboBoxes.sirenCount:getNumber() == 0 then
-				gui.tabPanels.main:setSelectedTab(gui.tabs.credits)
-			elseif selectedSirenConfigTab:getNumber() > gui.comboBoxes.sirenCount:getNumber() then
-				gui.tabPanels.main:setSelectedTab(gui.tabs.sirenConfig[gui.comboBoxes.sirenCount:getNumber()])
+			local selectedSirenConfigTab = getSelectedSirenConfigTab()
+
+			if selectedSirenConfigTab then
+				if selectedSirenConfigTab:getNumber() > gui.comboBoxes.sirenCount:getNumber() then
+					gui.tabPanels.main:setSelectedTab(gui.tabs.sirenConfig[gui.comboBoxes.sirenCount:getNumber()])
+				end
 			end
 		end
 
 		updateCurrentVehicleSirens(sirenPointsConfig, unpack(getSirenParamsFromGui()))
+		refreshOutputTab()
 	end
 end
 
@@ -237,6 +288,16 @@ function getSelectedSirenConfigTab()
 	return nil
 end
 
+function insertLuaCode()
+	local code = generateLuaCode(getSirenParamsFromGui(true), sirenPointsConfig)
+	gui.memos.luaOutput:setText(code)
+end
+
+function insertXMLCode()
+	local code = generateXMLCode(getSirenParamsFromGui(true), sirenPointsConfig)
+	gui.memos.xmlOutput:setText(code)
+end
+
 function handleTabChange(tab)
 	local selectedSirenConfigTab = getSelectedSirenConfigTab()
 
@@ -245,6 +306,8 @@ function handleTabChange(tab)
 	else
 		-- It is one of additional tabs (About, Lua, XML...)
 		destroyExistingSirenPointControls()
+
+		refreshOutputTab(tab)
 	end
 end
 
