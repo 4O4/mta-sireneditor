@@ -49,7 +49,7 @@ local function buildMainGui()
 		gui.labels.sirenType:setFont("default-bold-small")
 		gui.labels.sirenType:setHorizontalAlign("right")
 		
-		gui.comboBoxes.sirenType = GuiComboBox(120, 57, 45, 110, defaultSettings.global.sirenType, false, gui.windows.main)
+		gui.comboBoxes.sirenType = GuiComboBox(120, 57, 45, 120, defaultSettings.global.sirenType, false, gui.windows.main)
 
 		for _, sirenType in ipairs(SIREN_TYPES) do
 			gui.comboBoxes.sirenType:addItem(sirenType)
