@@ -234,6 +234,8 @@ function handleGuiClicks()
 		setClipboard(gui.memos.xmlOutput:getText())
 	elseif source == gui.buttons.copyLuaOutput then
 		setClipboard(gui.memos.luaOutput:getText())
+	elseif source == gui.checkBoxes.luaOOP then
+		refreshOutputTab()
 	end
 end
 
@@ -289,12 +291,12 @@ function getSelectedSirenConfigTab()
 end
 
 function insertLuaCode()
-	local code = generateLuaCode(getSirenParamsFromGui(true), sirenPointsConfig)
+	local code = generateLuaCode(getSirenParamsFromGui(true), sirenPointsConfig, localPlayer.vehicle, gui.checkBoxes.luaOOP:getSelected())
 	gui.memos.luaOutput:setText(code)
 end
 
 function insertXMLCode()
-	local code = generateXMLCode(getSirenParamsFromGui(true), sirenPointsConfig)
+	local code = generateXMLCode(getSirenParamsFromGui(true), sirenPointsConfig, localPlayer.vehicle)
 	gui.memos.xmlOutput:setText(code)
 end
 

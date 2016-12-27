@@ -115,6 +115,10 @@ local function buildMainGui()
 		gui.memos.luaOutput:setReadOnly(true)
 		gui.buttons.copyLuaOutput = GuiButton(305, 10, 120, 20, "Copy to clipboard", false, gui.tabs.luaOutput)
 		gui.buttons.copyLuaOutput:setProperty("AlwaysOnTop", "True")
+		gui.checkBoxes.luaOOP = GuiCheckBox(340, 35, 85, 20, "OOP syntax", true, false, gui.tabs.luaOutput)
+		gui.checkBoxes.luaOOP:setProperty("NormalTextColour", "FF000000")
+		gui.checkBoxes.luaOOP:setProperty("HoverTextColour", "FF000000")
+		gui.checkBoxes.luaOOP:setProperty("AlwaysOnTop", "True")
 
 		gui.tabs.credits = GuiTab("About", gui.tabPanels.main)
 		
