@@ -1,6 +1,8 @@
 local function interpolate(str, variables)
 	function replace (w) 
- 		return tostring(variables[w:sub(3, -2)]) or w 
+		local new = variables[w:sub(3, -2)]
+
+ 		return (new ~= nil) and tostring(new) or w 
  	end
  	return str:gsub('($%b{})', replace)
 end
