@@ -24,8 +24,8 @@ local function generateCode(template, sirenParams, sirenPoints)
 	}
 end
 
-function generateLuaCode(sirenParams, sirenPoints)
-	return generateCode("Lua", sirenParams, sirenPoints)
+function generateLuaCode(sirenParams, sirenPoints, OOP)
+	return generateCode(OOP and "LuaOOP" or "Lua", sirenParams, sirenPoints)
 end
 
 function generateXMLCode(sirenParams, sirenPoints)
