@@ -7,7 +7,7 @@ function main()
 	setTimer(syncServerSirensWithLocal, syncInterval, 0)
 end
 
-function normalizeTableKeys(table, recursive)
+function normalizeTableKeys(inputTable, recursive)
 	-- For consistent naming
 	local map = {
 		SirenCount 		= "sirenCount",
@@ -27,9 +27,12 @@ function normalizeTableKeys(table, recursive)
 		Flags 			= "flags",
 	}
 	local newTable = {}
-	local recursive = recursive or true
+	-- Default to recursive conversion unless explicitly set to false
+	if recursive == nil then
+		recursive = true
+	end
 
-	for key, value in pairs(table) do
+	for key, value in pairs(inputTable) do
 		if type(value) == "table" and recursive then
 			newTable[map[key] or key] = normalizeTableKeys(value, recursive)
 		else
@@ -78,7 +81,8 @@ function updateCurrentVehicleSirens(sirenPoints, sirenCount, sirenType, enable36
 
 			function (result)
 				if result then
-					for index, siren in pairs(sirenPoints) do
+					-- Preserve siren point order deterministically
+					for index, siren in ipairs(sirenPoints) do
 						localPlayer.vehicle:setSirens(
 							index,
 							siren.posX,
@@ -190,7 +194,7 @@ function synchronizeGuiWithCurrentVehicleSirens()
 end
 
 function areVehicleSirensSynced(vehicle)
-	return synchronizationNeeded[localPlayer.vehicle] ~= true
+	return synchronizationNeeded[vehicle] ~= true
 end
 
 function syncServerSirensWithLocal()
